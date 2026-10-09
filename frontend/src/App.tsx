@@ -38,20 +38,11 @@ export default function App() {
   const [showFiles, setShowFiles] = useState(false);
   const [showSave, setShowSave]   = useState(false);
   const [fname, setFname]         = useState('');
-  const [theme, setTheme]         = useState<'dark' | 'light'>(() => (localStorage.getItem('medroute_theme') as any) || 'dark');
   const filesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchFiles().then(setFiles).catch(console.error);
   }, []);
-  useEffect(() => { 
-    localStorage.setItem('medroute_theme', theme); 
-    if (theme === 'light') {
-      document.documentElement.classList.add('light');
-    } else {
-      document.documentElement.classList.remove('light');
-    }
-  }, [theme]);
 
   useEffect(() => {
     if (!showFiles) return;
@@ -131,15 +122,6 @@ export default function App() {
           --dim:      #484f58;
           --mono:     'JetBrains Mono', 'Fira Code', monospace;
         }
-        .light {
-          --bg:       #ffffff;
-          --surface:  #f6f8fa;
-          --border:   #d0d7de;
-          --border2:  #afb8c1;
-          --text:     #374151;
-          --muted:    #6b7280;
-          --dim:      #9ca3af;
-        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow: hidden; font-size: 13px; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -154,7 +136,7 @@ export default function App() {
         .trow:hover { background: rgba(255,255,255,.03); }
       `}</style>
 
-      <div className={theme === 'light' ? 'light' : ''} style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: 'var(--bg)', color: 'var(--text)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: 'var(--bg)', color: 'var(--text)' }}>
 
         {/* ── HEADER ── */}
         <div style={{ height: 40, flexShrink: 0, display: 'flex', alignItems: 'center', padding: '0 12px', gap: 8, borderBottom: '1px solid var(--border)', background: 'var(--surface)', userSelect: 'none' }}>
@@ -211,9 +193,6 @@ export default function App() {
           </div>
 
           {/* Actions */}
-          <button onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')} style={ghostBtn} title="Toggle Theme">
-            {theme === 'dark' ? '☀️' : '🌙'}
-          </button>
           <button onClick={quickSave} style={ghostBtn}>
             {active ? 'Save' : 'Save as…'}
           </button>
@@ -257,7 +236,7 @@ export default function App() {
             </div>
             <div style={{ flex: 1, overflow: 'hidden' }}>
               <Editor height="100%" defaultLanguage="medroute" value={code}
-                onChange={v => setCode(v ?? '')} onMount={handleMount} theme={theme === 'dark' ? 'medroute-dark' : 'medroute-light'}
+                onChange={v => setCode(v ?? '')} onMount={handleMount} theme="medroute-dark"
                 options={{
                   fontSize: 13, fontFamily: '"JetBrains Mono","Fira Code",monospace',
                   fontLigatures: true, lineNumbers: 'on', minimap: { enabled: false },
