@@ -58,7 +58,7 @@ export default function App() {
 
   const handleMount = useCallback((_ed: any, mon: any) => {
     registerMedRouteLanguage(mon);
-    // Initial theme is set by the Editor component prop
+    mon.editor.setTheme('medroute-dark');
   }, []);
 
   const run = useCallback(async () => {
