@@ -25,45 +25,9 @@ REPORT
 
 interface SavedFile { name: string; content: string; savedAt: Date; }
 
-type OTab = 'exec' | 'tokens' | 'ir' | 'sym' | 'errors';
 
-const SEV_C: Record<string, string> = {
-  CRITICAL: '#e5534b', HIGH: '#e09440', MEDIUM: '#c9a73d', LOW: '#57ab5a',
-};
-const STATE_C: Record<string, string> = {
-  AVAILABLE: '#57ab5a', DISPATCHED: '#c9a73d',
-  COMPLETED: '#57ab5a', REGISTERED: '#768390',
-  IN_TRANSIT: '#e09440', TRANSFERRED: '#57ab5a', ACTIVE: '#57ab5a',
-};
-const IR_C: Record<string, string> = {
-  REGISTER_PATIENT: '#539bf5', SET_LOCATION: '#768390', SET_SEVERITY: '#e09440',
-  REGISTER_AMBULANCE: '#57ab5a', REGISTER_HOSPITAL: '#57ab5a', DISPATCH: '#e5534b',
-  ASSIGN_ROUTE: '#539bf5', SET_PRIORITY: '#e09440', STATUS: '#768390',
-  DISTANCE: '#57ab5a', TRANSFER: '#c9a73d', SPEED: '#e5534b', REPORT: '#8b949e',
-};
 
-function Badge({ val, map }: { val: string; map: Record<string, string> }) {
-  const c = map[val] || '#768390';
-  return (
-    <span style={{
-      color: c, fontSize: 11, fontWeight: 500,
-      background: `${c}14`, padding: '1px 6px', borderRadius: 3,
-      fontFamily: 'var(--mono)', border: `1px solid ${c}28`,
-    }}>{val || '—'}</span>
-  );
-}
 
-function TokTag({ type }: { type: string }) {
-  const t = type.replace('KEYWORD_', '').replace('SEVERITY_', '').replace('PRIORITY_', '');
-  const kw = type.startsWith('KEYWORD');
-  const sev = type.startsWith('SEVERITY') || type.startsWith('PRIORITY');
-  const str = type === 'STRING';
-  const id = type === 'IDENTIFIER';
-  const c = kw ? '#e5534b' : sev ? '#e09440' : str ? '#c9a73d' : id ? '#539bf5' : '#768390';
-  return (
-    <span style={{ color: c, fontSize: 11, fontFamily: 'var(--mono)', fontWeight: 500 }}>{t}</span>
-  );
-}
 
 export default function App() {
   const [code, setCode]           = useState(DEFAULT_CODE);
@@ -74,7 +38,6 @@ export default function App() {
   const [showFiles, setShowFiles] = useState(false);
   const [showSave, setShowSave]   = useState(false);
   const [fname, setFname]         = useState('');
-  const [tab, setTab]             = useState<OTab>('exec');
   const [theme, setTheme]         = useState<'dark' | 'light'>(() => (localStorage.getItem('medroute_theme') as any) || 'dark');
   const filesRef = useRef<HTMLDivElement>(null);
 
@@ -109,7 +72,6 @@ export default function App() {
     try {
       const r = await compileSource(code);
       setResult(r);
-      setTab(r.errors?.length ? 'errors' : 'exec');
     } catch (e: any) {
       setResult({
         status: 'FILE_ERROR', statementCount: 0, tokens: [], parseTree: [],
@@ -119,7 +81,6 @@ export default function App() {
         symbolTable: { patients: [], ambulances: [], hospitals: [] },
         ir: [], execution: { success: false, log: [], summary: {} },
       } as any);
-      setTab('errors');
     } finally { setBusy(false); }
   }, [code]);
 
@@ -342,32 +303,8 @@ export default function App() {
               </div>
             )}
 
-            {/* Tab bar */}
-            <div style={{ height: 30, flexShrink: 0, display: 'flex', alignItems: 'stretch', borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}>
-              {([
-                { id: 'exec',   label: 'Execution', n: result?.execution?.log?.length },
-                { id: 'tokens', label: 'Tokens',    n: result?.tokens?.length },
-                { id: 'ir',     label: 'IR',        n: result?.ir?.length },
-                { id: 'sym',    label: 'Symbols',   n: undefined },
-                { id: 'errors', label: 'Errors',    n: errs || undefined, warn: errs > 0 },
-              ] as { id: OTab; label: string; n?: number; warn?: boolean }[]).map(t => (
-                <button key={t.id} className="tab-btn" onClick={() => setTab(t.id)}
-                  style={{
-                    background: 'none', border: 'none', borderBottom: `1px solid ${tab === t.id ? '#539bf5' : 'transparent'}`,
-                    padding: '0 12px', fontSize: 11, fontWeight: tab === t.id ? 600 : 400, cursor: 'default',
-                    color: t.warn ? '#e5534b' : tab === t.id ? '#539bf5' : 'var(--dim)',
-                    display: 'flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap', transition: 'color .1s',
-                  }}>
-                  {t.label}
-                  {t.n !== undefined && t.n > 0 && (
-                    <span style={{ fontSize: 10, color: 'var(--dim)', fontFamily: 'var(--mono)' }}>{t.n}</span>
-                  )}
-                </button>
-              ))}
-            </div>
-
             {/* Content */}
-            <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+            <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '16px' }}>
 
               {/* Idle */}
               {!result && !busy && (
@@ -386,180 +323,47 @@ export default function App() {
               )}
 
               {result && !busy && (
-                <div style={{ padding: '10px 14px' }}>
+                <div style={{ 
+                  fontFamily: 'var(--mono)', fontSize: 13, 
+                  background: '#0d1117', color: '#c9d1d9', 
+                  padding: '16px', borderRadius: '6px', 
+                  border: '1px solid #30363d',
+                  boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)',
+                  minHeight: '100%',
+                  lineHeight: 1.6
+                }}>
+                  <div style={{ color: '#8b949e', marginBottom: 12 }}>
+                    <span style={{ color: '#58a6ff' }}>$</span> ./medroute program.med
+                  </div>
 
-                  {/* EXECUTION */}
-                  {tab === 'exec' && (
+                  {errs > 0 ? (
                     <div>
-                      {!result.execution?.log?.length
-                        ? <div style={dimText}>No execution log.</div>
-                        : (
-                          <div style={{ 
-                            fontFamily: 'var(--mono)', fontSize: 13, 
-                            background: '#0d1117', color: '#c9d1d9', 
-                            padding: '16px', borderRadius: '6px', 
-                            border: '1px solid #30363d',
-                            boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)',
-                            overflowX: 'auto',
-                            lineHeight: 1.6
-                          }}>
-                            <div style={{ color: '#8b949e', marginBottom: 12 }}>
-                              <span style={{ color: '#58a6ff' }}>$</span> ./medroute program.med
-                            </div>
-                            {result.execution.log.map((e, i) => (
-                              <div key={i} style={{ color: e.success ? '#c9d1d9' : '#ff7b72', whiteSpace: 'pre-wrap' }}>
-                                {e.message}
-                              </div>
-                            ))}
-                            <div style={{ color: '#8b949e', marginTop: 12 }}>
-                              <span style={{ color: '#58a6ff' }}>$</span> <span style={{ animation: 'blink 1s step-end infinite' }}>_</span>
-                            </div>
-                            <style>{`
-                              @keyframes blink { 50% { opacity: 0; } }
-                            `}</style>
-                          </div>
-                        )}
-                      {ok && result.execution?.summary && (
-                        <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 6 }}>
-                          {[
-                            { label: 'Patients',   v: result.execution.summary.total_patients },
-                            { label: 'Ambulances', v: result.execution.summary.total_ambulances },
-                            { label: 'Hospitals',  v: result.execution.summary.total_hospitals },
-                          ].map(s => (
-                            <div key={s.label} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 5, padding: '8px 10px' }}>
-                              <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--mono)' }}>{s.v ?? 0}</div>
-                              <div style={{ fontSize: 10, color: 'var(--dim)', marginTop: 2, textTransform: 'uppercase', letterSpacing: .5 }}>{s.label}</div>
-                            </div>
-                          ))}
+                      {result.errors?.map((e, i) => (
+                        <div key={i} style={{ color: '#ff7b72', marginBottom: 4, whiteSpace: 'pre-wrap' }}>
+                          [{e.type} ERROR] Line {e.line}: {e.message}
+                          {e.expected && <div style={{ color: '#8b949e', marginLeft: 16 }}>Expected: {e.expected}</div>}
+                          {e.received && <div style={{ color: '#8b949e', marginLeft: 16 }}>Got: {e.received}</div>}
                         </div>
-                      )}
+                      ))}
                     </div>
-                  )}
-
-                  {/* TOKENS */}
-                  {tab === 'tokens' && (
-                    <table style={tbl}>
-                      <thead>
-                        <tr>{['Line', 'Lexeme', 'Type'].map(h => <th key={h} style={th}>{h}</th>)}</tr>
-                      </thead>
-                      <tbody>
-                        {result.tokens?.map((t, i) => (
-                          <tr key={i} className="trow" style={{ borderBottom: '1px solid var(--border)' }}>
-                            <td style={{ ...td, color: 'var(--dim)', textAlign: 'right', width: 36, fontFamily: 'var(--mono)' }}>{t.line}</td>
-                            <td style={{ ...td, fontFamily: 'var(--mono)', fontWeight: 600 }}>{t.lexeme}</td>
-                            <td style={td}><TokTag type={t.type} /></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-
-                  {/* IR */}
-                  {tab === 'ir' && (
-                    <div style={{ fontFamily: 'var(--mono)', fontSize: 12 }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '32px 200px 60px 60px 1fr', padding: '3px 0', borderBottom: '1px solid var(--border)', color: 'var(--dim)', fontSize: 10, textTransform: 'uppercase', letterSpacing: .5, marginBottom: 2 }}>
-                        <span>#</span><span>Opcode</span><span>Arg1</span><span>Arg2</span><span>Arg3</span>
-                      </div>
-                      {result.ir?.map((ins, i) => (
-                        <div key={i} className="trow" style={{ display: 'grid', gridTemplateColumns: '32px 200px 60px 60px 1fr', padding: '4px 0', borderBottom: '1px solid var(--border)' }}>
-                          <span style={{ color: 'var(--dim)' }}>{String(ins.index).padStart(3, '0')}</span>
-                          <span style={{ color: IR_C[ins.opcode] || 'var(--text)', fontWeight: 600 }}>{ins.opcode}</span>
-                          <span style={{ color: '#539bf5' }}>{ins.arg1 || ''}</span>
-                          <span style={{ color: '#539bf5' }}>{ins.arg2 || ''}</span>
-                          {ins.arg3 && <span style={{ color: '#c9a73d' }}>"{ins.arg3}"</span>}
+                  ) : !result.execution?.log?.length ? (
+                    <div style={{ color: '#8b949e' }}>Program exited with no output.</div>
+                  ) : (
+                    <div>
+                      {result.execution.log.map((e, i) => (
+                        <div key={i} style={{ color: e.success ? '#c9d1d9' : '#ff7b72', whiteSpace: 'pre-wrap' }}>
+                          {e.message}
                         </div>
                       ))}
                     </div>
                   )}
 
-                  {/* SYMBOLS */}
-                  {tab === 'sym' && (
-                    <div>
-                      {([
-                        {
-                          title: 'Patients',
-                          data: result.symbolTable?.patients,
-                          cols: ['ID', 'Location', 'Severity', 'State', 'Ambulance', 'Hospital'],
-                          row: (p: any) => [
-                            <span style={{ fontFamily: 'var(--mono)', fontWeight: 600 }}>{p.id}</span>,
-                            <span style={{ color: 'var(--muted)', fontFamily: 'var(--mono)', fontSize: 11 }}>{p.location || '—'}</span>,
-                            <Badge val={p.severity} map={SEV_C} />,
-                            <Badge val={p.state} map={STATE_C} />,
-                            <span style={{ fontFamily: 'var(--mono)', color: 'var(--muted)' }}>{p.ambulance || '—'}</span>,
-                            <span style={{ fontFamily: 'var(--mono)', color: 'var(--muted)' }}>{p.hospital || '—'}</span>,
-                          ],
-                        },
-                        {
-                          title: 'Ambulances',
-                          data: result.symbolTable?.ambulances,
-                          cols: ['ID', 'State', 'Patient', 'Hospital', 'Priority', 'Speed (km/h)', 'Distance (km)', 'ETA (min)'],
-                          row: (a: any) => [
-                            <span style={{ fontFamily: 'var(--mono)', fontWeight: 600 }}>{a.id}</span>,
-                            <Badge val={a.state} map={STATE_C} />,
-                            <span style={{ fontFamily: 'var(--mono)', color: 'var(--muted)' }}>{a.patient || '—'}</span>,
-                            <span style={{ fontFamily: 'var(--mono)', color: 'var(--muted)' }}>{a.hospital || '—'}</span>,
-                            <Badge val={a.priority} map={SEV_C} />,
-                            <span style={{ fontFamily: 'var(--mono)', color: 'var(--text)' }}>{a.speed > 0 ? a.speed : '—'}</span>,
-                            <span style={{ fontFamily: 'var(--mono)', color: 'var(--text)' }}>{a.distance > 0 ? a.distance : '—'}</span>,
-                            <span style={{ fontFamily: 'var(--mono)', color: '#c9a73d', fontWeight: 600 }}>{a.eta > 0 ? a.eta : '—'}</span>,
-                          ],
-                        },
-                        {
-                          title: 'Hospitals',
-                          data: result.symbolTable?.hospitals,
-                          cols: ['ID', 'Name', 'Status'],
-                          row: (h: any) => [
-                            <span style={{ fontFamily: 'var(--mono)', fontWeight: 600 }}>{h.id}</span>,
-                            <span style={{ fontFamily: 'var(--mono)', color: 'var(--muted)' }}>{h.name}</span>,
-                            <Badge val={h.status} map={STATE_C} />,
-                          ],
-                        },
-                      ]).filter(s => s.data?.length > 0).map(sec => (
-                        <div key={sec.title} style={{ marginBottom: 16 }}>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: .5 }}>{sec.title}</div>
-                          <table style={tbl}>
-                            <thead><tr>{sec.cols.map(c => <th key={c} style={th}>{c}</th>)}</tr></thead>
-                            <tbody>{sec.data.map((row: any, i: number) => (
-                              <tr key={i} className="trow" style={{ borderBottom: '1px solid var(--border)' }}>
-                                {sec.row(row).map((cell, j) => <td key={j} style={td}>{cell}</td>)}
-                              </tr>
-                            ))}</tbody>
-                          </table>
-                        </div>
-                      ))}
-                      {!result.symbolTable?.patients?.length && !result.symbolTable?.ambulances?.length && !result.symbolTable?.hospitals?.length && (
-                        <div style={dimText}>Symbol table is empty.</div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* ERRORS */}
-                  {tab === 'errors' && (
-                    <div>
-                      {errs === 0 ? (
-                        <div style={{ fontSize: 12, color: '#57ab5a', padding: '8px 0' }}>No errors.</div>
-                      ) : result.errors?.map((e, i) => (
-                        <div key={i} style={{ borderLeft: '2px solid #e5534b', paddingLeft: 10, marginBottom: 12 }}>
-                          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: '#e5534b', textTransform: 'uppercase', letterSpacing: .4 }}>{e.type}</span>
-                            {e.line > 0 && <span style={{ fontSize: 10, color: 'var(--dim)', fontFamily: 'var(--mono)' }}>:{e.line}</span>}
-                          </div>
-                          <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.55 }}>{e.message}</div>
-                          {e.expected && (
-                            <div style={{ marginTop: 6, fontSize: 11, fontFamily: 'var(--mono)', color: 'var(--dim)' }}>
-                              expected <span style={{ color: '#57ab5a' }}>{e.expected}</span>
-                            </div>
-                          )}
-                          {e.received && (
-                            <div style={{ fontSize: 11, fontFamily: 'var(--mono)', color: 'var(--dim)', marginTop: 2 }}>
-                              got <span style={{ color: '#e5534b' }}>{e.received}</span>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
+                  <div style={{ color: '#8b949e', marginTop: 12 }}>
+                    <span style={{ color: '#58a6ff' }}>$</span> <span style={{ animation: 'blink 1s step-end infinite' }}>_</span>
+                  </div>
+                  <style>{`
+                    @keyframes blink { 50% { opacity: 0; } }
+                  `}</style>
                 </div>
               )}
             </div>
@@ -576,7 +380,3 @@ const ghostBtn: React.CSSProperties = {
   padding: '3px 10px', fontSize: 12, color: 'var(--muted)', cursor: 'default',
   display: 'flex', alignItems: 'center', gap: 5,
 };
-const dimText: React.CSSProperties = { fontSize: 12, color: 'var(--dim)', padding: '4px 0' };
-const tbl: React.CSSProperties = { width: '100%', borderCollapse: 'collapse', fontSize: 12 };
-const th: React.CSSProperties = { color: 'var(--dim)', fontWeight: 500, padding: '3px 8px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: .5 };
-const td: React.CSSProperties = { padding: '4px 8px', verticalAlign: 'middle' };
