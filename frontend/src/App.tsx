@@ -394,14 +394,29 @@ export default function App() {
                       {!result.execution?.log?.length
                         ? <div style={dimText}>No execution log.</div>
                         : (
-                          <div style={{ fontFamily: 'var(--mono)', fontSize: 12 }}>
+                          <div style={{ 
+                            fontFamily: 'var(--mono)', fontSize: 13, 
+                            background: '#0d1117', color: '#c9d1d9', 
+                            padding: '16px', borderRadius: '6px', 
+                            border: '1px solid #30363d',
+                            boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)',
+                            overflowX: 'auto',
+                            lineHeight: 1.6
+                          }}>
+                            <div style={{ color: '#8b949e', marginBottom: 12 }}>
+                              <span style={{ color: '#58a6ff' }}>$</span> ./medroute program.med
+                            </div>
                             {result.execution.log.map((e, i) => (
-                              <div key={i} style={{ display: 'flex', gap: 10, padding: '4px 0', borderBottom: '1px solid var(--border)' }}>
-                                <span style={{ color: 'var(--dim)', minWidth: 28, textAlign: 'right', flexShrink: 0 }}>{String(e.index).padStart(3, '0')}</span>
-                                <span style={{ flexShrink: 0, color: e.success ? '#57ab5a' : '#e5534b', fontWeight: 700 }}>{e.success ? '+' : '!'}</span>
-                                <span style={{ color: e.success ? 'var(--text)' : '#e5534b', lineHeight: 1.5 }}>{e.message}</span>
+                              <div key={i} style={{ color: e.success ? '#c9d1d9' : '#ff7b72', whiteSpace: 'pre-wrap' }}>
+                                {e.message}
                               </div>
                             ))}
+                            <div style={{ color: '#8b949e', marginTop: 12 }}>
+                              <span style={{ color: '#58a6ff' }}>$</span> <span style={{ animation: 'blink 1s step-end infinite' }}>_</span>
+                            </div>
+                            <style>{`
+                              @keyframes blink { 50% { opacity: 0; } }
+                            `}</style>
                           </div>
                         )}
                       {ok && result.execution?.summary && (
