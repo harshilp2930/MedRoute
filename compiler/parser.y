@@ -120,7 +120,7 @@ statement
     | transfer_stmt
     | speed_stmt
     | report_stmt
-    | error          { yyerrok; }
+    | error          { yyclearin; yyerrok; }
     ;
 
 /* ----------------------------------------------------------

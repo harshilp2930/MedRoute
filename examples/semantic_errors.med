@@ -33,14 +33,10 @@ DISPATCH A12 P101
 // ERROR 4: Dispatch again — ambulance A12 already DISPATCHED
 DISPATCH A12 P101
 
-// ERROR 5: Negative distance
-DISTANCE A12 P101 -5
+// ERROR 5: Zero speed
+SPEED A12 0
 
-// ERROR 6: Invalid severity value
-PATIENT P102
-SEVERITY P102 EXTREME
-
-// ERROR 7: ROUTE to unregistered hospital
+// ERROR 6: ROUTE to unregistered hospital
 ROUTE A12 H99
 
 REPORT

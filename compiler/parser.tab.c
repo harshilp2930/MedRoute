@@ -1224,7 +1224,7 @@ yyreduce:
 
   case 18: /* statement: error  */
 #line 123 "parser.y"
-                     { yyerrok; }
+                     { yyclearin; yyerrok; }
 #line 1229 "parser.tab.c"
     break;
 
