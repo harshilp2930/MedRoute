@@ -86,8 +86,26 @@ int main(int argc, char **argv) {
     }
 
     /* --------------------------------------------------------
-     * BUILD OUTPUT JSON
+     * BUILD OUTPUT
      * -------------------------------------------------------- */
+    int text_mode = (argc >= 3 && strcmp(argv[2], "--text") == 0);
+    if (text_mode) {
+        if (has_syntax_errors) {
+            printf("Error: Syntax Errors detected.\n");
+        } else if (has_semantic_errors) {
+            printf("Error: Semantic Errors detected.\n");
+        } else if (exec_res) {
+            for (int i = 0; i < exec_res->count; i++) {
+                printf("%s\n", exec_res->entries[i].message);
+            }
+        }
+        if (exec_res) executor_free(exec_res);
+        ir_destroy(g_ir);
+        symtable_destroy(g_symtable);
+        semantic_reset();
+        return (has_syntax_errors || has_semantic_errors) ? 2 : 0;
+    }
+
     const char *status = "SUCCESS";
     if (has_syntax_errors)   status = "SYNTAX_ERROR";
     else if (has_semantic_errors) status = "SEMANTIC_ERROR";
