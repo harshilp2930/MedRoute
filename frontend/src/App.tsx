@@ -346,7 +346,40 @@ export default function App() {
                     </div>
                   ) : (
                     <div>
-                      <div style={{ color: '#58a6ff', marginBottom: 8 }}>=== MEDROUTE EXECUTION REPORT ===</div>
+                      {/* TOKENS */}
+                      <div style={{ color: '#58a6ff', marginBottom: 8, marginTop: 8 }}>--- PHASE 1: LEXICAL ANALYSIS (TOKENS) ---</div>
+                      {result.tokens?.length ? (
+                        <div style={{ color: '#8b949e', whiteSpace: 'pre-wrap' }}>
+                          {result.tokens.map(t => `Line ${String(t.line).padEnd(3)} | ${t.type.padEnd(25)} | ${t.lexeme}`).join('\n')}
+                        </div>
+                      ) : <div style={{ color: '#8b949e' }}>No tokens generated.</div>}
+
+                      {/* SYNTAX */}
+                      <div style={{ color: '#58a6ff', marginBottom: 8, marginTop: 16 }}>--- PHASE 2: SYNTAX ANALYSIS ---</div>
+                      <div style={{ color: '#57ab5a' }}>Syntax analysis completed successfully. {result.statementCount} statements parsed.</div>
+
+                      {/* IR */}
+                      <div style={{ color: '#58a6ff', marginBottom: 8, marginTop: 16 }}>--- PHASE 3: INTERMEDIATE REPRESENTATION ---</div>
+                      {result.ir?.length ? (
+                        <div style={{ color: '#8b949e', whiteSpace: 'pre-wrap' }}>
+                          {result.ir.map(ins => `[${String(ins.index).padStart(3, '0')}] ${ins.opcode.padEnd(20)} ${ins.arg1 || ''} ${ins.arg2 || ''} ${ins.arg3 ? '"'+ins.arg3+'"' : ''}`).join('\n')}
+                        </div>
+                      ) : <div style={{ color: '#8b949e' }}>No IR generated.</div>}
+
+                      {/* EXECUTION LOG */}
+                      <div style={{ color: '#58a6ff', marginBottom: 8, marginTop: 16 }}>--- PHASE 4: EXECUTION LOG ---</div>
+                      {result.execution?.log?.length ? (
+                        <div>
+                          {result.execution.log.map((e, i) => (
+                            <div key={i} style={{ color: e.success ? '#8b949e' : '#ff7b72', whiteSpace: 'pre-wrap' }}>
+                              {e.message}
+                            </div>
+                          ))}
+                        </div>
+                      ) : <div style={{ color: '#8b949e' }}>Program exited with no output.</div>}
+
+                      {/* REPORT */}
+                      <div style={{ color: '#58a6ff', marginBottom: 8, marginTop: 16 }}>=== PHASE 5: MEDROUTE FINAL OUTPUT ===</div>
                       
                       {result.symbolTable?.ambulances?.length > 0 && (
                         <div style={{ marginBottom: 16 }}>
