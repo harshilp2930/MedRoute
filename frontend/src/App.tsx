@@ -341,20 +341,63 @@ export default function App() {
                       {result.errors?.map((e, i) => (
                         <div key={i} style={{ color: '#ff7b72', marginBottom: 4, whiteSpace: 'pre-wrap' }}>
                           [{e.type} ERROR] Line {e.line}: {e.message}
-                          {e.expected && <div style={{ color: '#8b949e', marginLeft: 16 }}>Expected: {e.expected}</div>}
-                          {e.received && <div style={{ color: '#8b949e', marginLeft: 16 }}>Got: {e.received}</div>}
                         </div>
                       ))}
                     </div>
-                  ) : !result.execution?.log?.length ? (
-                    <div style={{ color: '#8b949e' }}>Program exited with no output.</div>
                   ) : (
                     <div>
-                      {result.execution.log.map((e, i) => (
-                        <div key={i} style={{ color: e.success ? '#c9d1d9' : '#ff7b72', whiteSpace: 'pre-wrap' }}>
-                          {e.message}
+                      <div style={{ color: '#58a6ff', marginBottom: 8 }}>=== MEDROUTE EXECUTION REPORT ===</div>
+                      
+                      {result.symbolTable?.ambulances?.length > 0 && (
+                        <div style={{ marginBottom: 16 }}>
+                          <div style={{ color: '#c9d1d9', fontWeight: 'bold', textDecoration: 'underline' }}>AMBULANCES</div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '80px 100px 100px 100px 80px', color: '#8b949e', marginTop: 4 }}>
+                            <span>ID</span><span>PATIENT</span><span>SPEED</span><span>DISTANCE</span><span>ETA</span>
+                          </div>
+                          {result.symbolTable.ambulances.map((a: any, i: number) => (
+                            <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 100px 100px 100px 80px', color: '#c9d1d9' }}>
+                              <span style={{ color: '#79c0ff' }}>{a.id}</span>
+                              <span>{a.patient || 'NONE'}</span>
+                              <span>{a.speed > 0 ? a.speed + ' km/h' : '-'}</span>
+                              <span>{a.distance > 0 ? a.distance + ' km' : '-'}</span>
+                              <span style={{ color: '#d2a8ff' }}>{a.eta > 0 ? a.eta + ' min' : '-'}</span>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      )}
+
+                      {result.symbolTable?.patients?.length > 0 && (
+                        <div style={{ marginBottom: 16 }}>
+                          <div style={{ color: '#c9d1d9', fontWeight: 'bold', textDecoration: 'underline' }}>PATIENTS</div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '80px 150px 100px', color: '#8b949e', marginTop: 4 }}>
+                            <span>ID</span><span>LOCATION</span><span>SEVERITY</span>
+                          </div>
+                          {result.symbolTable.patients.map((p: any, i: number) => (
+                            <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 150px 100px', color: '#c9d1d9' }}>
+                              <span style={{ color: '#79c0ff' }}>{p.id}</span>
+                              <span>{p.location || '-'}</span>
+                              <span>{p.severity}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {result.symbolTable?.hospitals?.length > 0 && (
+                        <div style={{ marginBottom: 16 }}>
+                          <div style={{ color: '#c9d1d9', fontWeight: 'bold', textDecoration: 'underline' }}>HOSPITALS</div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '80px 200px', color: '#8b949e', marginTop: 4 }}>
+                            <span>ID</span><span>NAME</span>
+                          </div>
+                          {result.symbolTable.hospitals.map((h: any, i: number) => (
+                            <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 200px', color: '#c9d1d9' }}>
+                              <span style={{ color: '#79c0ff' }}>{h.id}</span>
+                              <span>{h.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      <div style={{ color: '#57ab5a', marginTop: 8 }}>Program execution completed successfully.</div>
                     </div>
                   )}
 
