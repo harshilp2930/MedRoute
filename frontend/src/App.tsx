@@ -42,6 +42,9 @@ export default function App() {
 
   useEffect(() => {
     fetchFiles().then(setFiles).catch(console.error);
+    // Force remove light theme from previous sessions
+    document.documentElement.classList.remove('light');
+    localStorage.removeItem('medroute_theme');
   }, []);
 
   useEffect(() => {
