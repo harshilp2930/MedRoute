@@ -477,13 +477,16 @@ export default function App() {
                         {
                           title: 'Ambulances',
                           data: result.symbolTable?.ambulances,
-                          cols: ['ID', 'State', 'Patient', 'Hospital', 'Priority'],
+                          cols: ['ID', 'State', 'Patient', 'Hospital', 'Priority', 'Speed (km/h)', 'Distance (km)', 'ETA (min)'],
                           row: (a: any) => [
                             <span style={{ fontFamily: 'var(--mono)', fontWeight: 600 }}>{a.id}</span>,
                             <Badge val={a.state} map={STATE_C} />,
                             <span style={{ fontFamily: 'var(--mono)', color: 'var(--muted)' }}>{a.patient || '—'}</span>,
                             <span style={{ fontFamily: 'var(--mono)', color: 'var(--muted)' }}>{a.hospital || '—'}</span>,
                             <Badge val={a.priority} map={SEV_C} />,
+                            <span style={{ fontFamily: 'var(--mono)', color: 'var(--text)' }}>{a.speed > 0 ? a.speed : '—'}</span>,
+                            <span style={{ fontFamily: 'var(--mono)', color: 'var(--text)' }}>{a.distance > 0 ? a.distance : '—'}</span>,
+                            <span style={{ fontFamily: 'var(--mono)', color: '#c9a73d', fontWeight: 600 }}>{a.eta > 0 ? a.eta : '—'}</span>,
                           ],
                         },
                         {

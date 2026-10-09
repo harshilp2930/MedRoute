@@ -244,15 +244,24 @@ void symtable_dump_json(SymbolTable *st, FILE *out) {
         AmbulanceEntry *a = st->ambulances[i];
         while (a) {
             if (!first_a) fprintf(out, ",\n");
+            int dist = 0;
+            int eta = 0;
+            if (strlen(a->assigned_patient) > 0) {
+                dist = symtable_get_distance(st, a->id, a->assigned_patient);
+                if (dist > 0 && a->speed > 0) {
+                    eta = (int)(((float)dist / (float)a->speed) * 60.0f);
+                }
+            }
+            
             fprintf(out,
                 "    {\"id\":\"%s\",\"state\":\"%s\",\"patient\":\"%s\","
-                "\"hospital\":\"%s\",\"priority\":\"%s\",\"speed\":%d}",
+                "\"hospital\":\"%s\",\"priority\":\"%s\",\"speed\":%d,\"distance\":%d,\"eta\":%d}",
                 a->id,
                 ambulance_state_to_str(a->state),
                 a->assigned_patient,
                 a->route_hospital,
                 priority_to_str(a->priority),
-                a->speed);
+                a->speed, dist, eta);
             first_a = 0;
             a = a->next;
         }
