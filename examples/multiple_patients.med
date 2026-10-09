@@ -1,0 +1,58 @@
+// multiple_patients.med
+// MedRoute Example 2 — Multi-patient, multi-ambulance scenario
+// ============================================================
+
+// Register three patients
+PATIENT P101
+LOCATION P101 "Sardar Patel Road"
+SEVERITY P101 CRITICAL
+
+PATIENT P102
+LOCATION P102 "MG Road Junction"
+SEVERITY P102 HIGH
+
+PATIENT P103
+LOCATION P103 "Railway Station"
+SEVERITY P103 MEDIUM
+
+// Register ambulances
+AMBULANCE A12
+AMBULANCE A13
+AMBULANCE A14
+
+// Register hospitals
+HOSPITAL H01 "City Hospital"
+HOSPITAL H02 "Apollo Medical Centre"
+
+// Dispatch critical patient first (HIGH priority)
+DISPATCH A12 P101
+ROUTE A12 H01
+PRIORITY A12 HIGH
+
+// Dispatch second patient
+DISPATCH A13 P102
+ROUTE A13 H01
+PRIORITY A13 HIGH
+
+// Dispatch third patient
+DISPATCH A14 P103
+ROUTE A14 H02
+PRIORITY A14 MEDIUM
+
+// Status check all ambulances
+STATUS A12
+STATUS A13
+STATUS A14
+
+// Ambulances arrive at patient locations
+ARRIVE A12
+ARRIVE A13
+ARRIVE A14
+
+// Transfer patients to hospitals
+TRANSFER P101 H01
+TRANSFER P102 H01
+TRANSFER P103 H02
+
+// Final report
+REPORT

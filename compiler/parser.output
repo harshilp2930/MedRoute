@@ -1,0 +1,779 @@
+Terminals unused in grammar
+
+    TOK_REGISTER
+    TOK_AVAILABLE
+    TOK_ASSIGN
+    TOK_EQ
+    TOK_NEQ
+    TOK_GTE
+    TOK_LTE
+    TOK_GT
+    TOK_LT
+    TOK_ASSIGN_OP
+    TOK_INTEGER
+    TOK_FLOAT
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: statement_list
+
+    2 statement_list: statement
+    3               | statement_list statement
+
+    4 statement: patient_stmt
+    5          | location_stmt
+    6          | severity_stmt
+    7          | ambulance_stmt
+    8          | hospital_stmt
+    9          | dispatch_stmt
+   10          | route_stmt
+   11          | priority_stmt
+   12          | status_stmt
+   13          | arrive_stmt
+   14          | transfer_stmt
+   15          | cancel_stmt
+   16          | report_stmt
+   17          | error
+
+   18 patient_stmt: TOK_PATIENT TOK_IDENTIFIER
+   19             | TOK_PATIENT error
+
+   20 location_stmt: TOK_LOCATION TOK_IDENTIFIER TOK_STRING
+   21              | TOK_LOCATION error
+
+   22 severity_stmt: TOK_SEVERITY TOK_IDENTIFIER severity_val
+   23              | TOK_SEVERITY error
+
+   24 severity_val: TOK_LOW
+   25             | TOK_MEDIUM
+   26             | TOK_HIGH
+   27             | TOK_CRITICAL
+
+   28 ambulance_stmt: TOK_AMBULANCE TOK_IDENTIFIER
+   29               | TOK_AMBULANCE error
+
+   30 hospital_stmt: TOK_HOSPITAL TOK_IDENTIFIER TOK_STRING
+   31              | TOK_HOSPITAL error
+
+   32 dispatch_stmt: TOK_DISPATCH TOK_IDENTIFIER TOK_IDENTIFIER
+   33              | TOK_DISPATCH TOK_IDENTIFIER
+   34              | TOK_DISPATCH error
+
+   35 route_stmt: TOK_ROUTE TOK_IDENTIFIER TOK_IDENTIFIER
+   36           | TOK_ROUTE error
+
+   37 priority_stmt: TOK_PRIORITY TOK_IDENTIFIER priority_val
+   38              | TOK_PRIORITY error
+
+   39 priority_val: TOK_LOW
+   40             | TOK_MEDIUM
+   41             | TOK_HIGH
+
+   42 status_stmt: TOK_STATUS TOK_IDENTIFIER
+   43            | TOK_STATUS error
+
+   44 arrive_stmt: TOK_ARRIVE TOK_IDENTIFIER
+   45            | TOK_ARRIVE error
+
+   46 transfer_stmt: TOK_TRANSFER TOK_IDENTIFIER TOK_IDENTIFIER
+   47              | TOK_TRANSFER error
+
+   48 cancel_stmt: TOK_CANCEL TOK_IDENTIFIER
+   49            | TOK_CANCEL error
+
+   50 report_stmt: TOK_REPORT
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256) 17 19 21 23 29 31 34 36 38 43 45 47 49
+    TOK_PATIENT (258) 18 19
+    TOK_LOCATION (259) 20 21
+    TOK_SEVERITY (260) 22 23
+    TOK_AMBULANCE (261) 28 29
+    TOK_HOSPITAL (262) 30 31
+    TOK_DISPATCH (263) 32 33 34
+    TOK_ROUTE (264) 35 36
+    TOK_PRIORITY (265) 37 38
+    TOK_STATUS (266) 42 43
+    TOK_ARRIVE (267) 44 45
+    TOK_TRANSFER (268) 46 47
+    TOK_CANCEL (269) 48 49
+    TOK_REGISTER (270)
+    TOK_AVAILABLE (271)
+    TOK_ASSIGN (272)
+    TOK_REPORT (273) 50
+    TOK_CRITICAL (274) 27
+    TOK_HIGH (275) 26 41
+    TOK_MEDIUM (276) 25 40
+    TOK_LOW (277) 24 39
+    TOK_EQ (278)
+    TOK_NEQ (279)
+    TOK_GTE (280)
+    TOK_LTE (281)
+    TOK_GT (282)
+    TOK_LT (283)
+    TOK_ASSIGN_OP (284)
+    TOK_IDENTIFIER <str_val> (285) 18 20 22 28 30 32 33 35 37 42 44 46 48
+    TOK_STRING <str_val> (286) 20 30
+    TOK_INTEGER <int_val> (287)
+    TOK_FLOAT <float_val> (288)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (34)
+        on left: 0
+    program (35)
+        on left: 1
+        on right: 0
+    statement_list (36)
+        on left: 2 3
+        on right: 1 3
+    statement (37)
+        on left: 4 5 6 7 8 9 10 11 12 13 14 15 16 17
+        on right: 2 3
+    patient_stmt (38)
+        on left: 18 19
+        on right: 4
+    location_stmt (39)
+        on left: 20 21
+        on right: 5
+    severity_stmt (40)
+        on left: 22 23
+        on right: 6
+    severity_val <str_val> (41)
+        on left: 24 25 26 27
+        on right: 22
+    ambulance_stmt (42)
+        on left: 28 29
+        on right: 7
+    hospital_stmt (43)
+        on left: 30 31
+        on right: 8
+    dispatch_stmt (44)
+        on left: 32 33 34
+        on right: 9
+    route_stmt (45)
+        on left: 35 36
+        on right: 10
+    priority_stmt (46)
+        on left: 37 38
+        on right: 11
+    priority_val <str_val> (47)
+        on left: 39 40 41
+        on right: 37
+    status_stmt (48)
+        on left: 42 43
+        on right: 12
+    arrive_stmt (49)
+        on left: 44 45
+        on right: 13
+    transfer_stmt (50)
+        on left: 46 47
+        on right: 14
+    cancel_stmt (51)
+        on left: 48 49
+        on right: 15
+    report_stmt (52)
+        on left: 50
+        on right: 16
+
+
+State 0
+
+    0 $accept: . program $end
+
+    error          shift, and go to state 1
+    TOK_PATIENT    shift, and go to state 2
+    TOK_LOCATION   shift, and go to state 3
+    TOK_SEVERITY   shift, and go to state 4
+    TOK_AMBULANCE  shift, and go to state 5
+    TOK_HOSPITAL   shift, and go to state 6
+    TOK_DISPATCH   shift, and go to state 7
+    TOK_ROUTE      shift, and go to state 8
+    TOK_PRIORITY   shift, and go to state 9
+    TOK_STATUS     shift, and go to state 10
+    TOK_ARRIVE     shift, and go to state 11
+    TOK_TRANSFER   shift, and go to state 12
+    TOK_CANCEL     shift, and go to state 13
+    TOK_REPORT     shift, and go to state 14
+
+    program         go to state 15
+    statement_list  go to state 16
+    statement       go to state 17
+    patient_stmt    go to state 18
+    location_stmt   go to state 19
+    severity_stmt   go to state 20
+    ambulance_stmt  go to state 21
+    hospital_stmt   go to state 22
+    dispatch_stmt   go to state 23
+    route_stmt      go to state 24
+    priority_stmt   go to state 25
+    status_stmt     go to state 26
+    arrive_stmt     go to state 27
+    transfer_stmt   go to state 28
+    cancel_stmt     go to state 29
+    report_stmt     go to state 30
+
+
+State 1
+
+   17 statement: error .
+
+    $default  reduce using rule 17 (statement)
+
+
+State 2
+
+   18 patient_stmt: TOK_PATIENT . TOK_IDENTIFIER
+   19             | TOK_PATIENT . error
+
+    error           shift, and go to state 31
+    TOK_IDENTIFIER  shift, and go to state 32
+
+
+State 3
+
+   20 location_stmt: TOK_LOCATION . TOK_IDENTIFIER TOK_STRING
+   21              | TOK_LOCATION . error
+
+    error           shift, and go to state 33
+    TOK_IDENTIFIER  shift, and go to state 34
+
+
+State 4
+
+   22 severity_stmt: TOK_SEVERITY . TOK_IDENTIFIER severity_val
+   23              | TOK_SEVERITY . error
+
+    error           shift, and go to state 35
+    TOK_IDENTIFIER  shift, and go to state 36
+
+
+State 5
+
+   28 ambulance_stmt: TOK_AMBULANCE . TOK_IDENTIFIER
+   29               | TOK_AMBULANCE . error
+
+    error           shift, and go to state 37
+    TOK_IDENTIFIER  shift, and go to state 38
+
+
+State 6
+
+   30 hospital_stmt: TOK_HOSPITAL . TOK_IDENTIFIER TOK_STRING
+   31              | TOK_HOSPITAL . error
+
+    error           shift, and go to state 39
+    TOK_IDENTIFIER  shift, and go to state 40
+
+
+State 7
+
+   32 dispatch_stmt: TOK_DISPATCH . TOK_IDENTIFIER TOK_IDENTIFIER
+   33              | TOK_DISPATCH . TOK_IDENTIFIER
+   34              | TOK_DISPATCH . error
+
+    error           shift, and go to state 41
+    TOK_IDENTIFIER  shift, and go to state 42
+
+
+State 8
+
+   35 route_stmt: TOK_ROUTE . TOK_IDENTIFIER TOK_IDENTIFIER
+   36           | TOK_ROUTE . error
+
+    error           shift, and go to state 43
+    TOK_IDENTIFIER  shift, and go to state 44
+
+
+State 9
+
+   37 priority_stmt: TOK_PRIORITY . TOK_IDENTIFIER priority_val
+   38              | TOK_PRIORITY . error
+
+    error           shift, and go to state 45
+    TOK_IDENTIFIER  shift, and go to state 46
+
+
+State 10
+
+   42 status_stmt: TOK_STATUS . TOK_IDENTIFIER
+   43            | TOK_STATUS . error
+
+    error           shift, and go to state 47
+    TOK_IDENTIFIER  shift, and go to state 48
+
+
+State 11
+
+   44 arrive_stmt: TOK_ARRIVE . TOK_IDENTIFIER
+   45            | TOK_ARRIVE . error
+
+    error           shift, and go to state 49
+    TOK_IDENTIFIER  shift, and go to state 50
+
+
+State 12
+
+   46 transfer_stmt: TOK_TRANSFER . TOK_IDENTIFIER TOK_IDENTIFIER
+   47              | TOK_TRANSFER . error
+
+    error           shift, and go to state 51
+    TOK_IDENTIFIER  shift, and go to state 52
+
+
+State 13
+
+   48 cancel_stmt: TOK_CANCEL . TOK_IDENTIFIER
+   49            | TOK_CANCEL . error
+
+    error           shift, and go to state 53
+    TOK_IDENTIFIER  shift, and go to state 54
+
+
+State 14
+
+   50 report_stmt: TOK_REPORT .
+
+    $default  reduce using rule 50 (report_stmt)
+
+
+State 15
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 55
+
+
+State 16
+
+    1 program: statement_list .
+    3 statement_list: statement_list . statement
+
+    error          shift, and go to state 1
+    TOK_PATIENT    shift, and go to state 2
+    TOK_LOCATION   shift, and go to state 3
+    TOK_SEVERITY   shift, and go to state 4
+    TOK_AMBULANCE  shift, and go to state 5
+    TOK_HOSPITAL   shift, and go to state 6
+    TOK_DISPATCH   shift, and go to state 7
+    TOK_ROUTE      shift, and go to state 8
+    TOK_PRIORITY   shift, and go to state 9
+    TOK_STATUS     shift, and go to state 10
+    TOK_ARRIVE     shift, and go to state 11
+    TOK_TRANSFER   shift, and go to state 12
+    TOK_CANCEL     shift, and go to state 13
+    TOK_REPORT     shift, and go to state 14
+
+    $end  reduce using rule 1 (program)
+
+    statement       go to state 56
+    patient_stmt    go to state 18
+    location_stmt   go to state 19
+    severity_stmt   go to state 20
+    ambulance_stmt  go to state 21
+    hospital_stmt   go to state 22
+    dispatch_stmt   go to state 23
+    route_stmt      go to state 24
+    priority_stmt   go to state 25
+    status_stmt     go to state 26
+    arrive_stmt     go to state 27
+    transfer_stmt   go to state 28
+    cancel_stmt     go to state 29
+    report_stmt     go to state 30
+
+
+State 17
+
+    2 statement_list: statement .
+
+    $default  reduce using rule 2 (statement_list)
+
+
+State 18
+
+    4 statement: patient_stmt .
+
+    $default  reduce using rule 4 (statement)
+
+
+State 19
+
+    5 statement: location_stmt .
+
+    $default  reduce using rule 5 (statement)
+
+
+State 20
+
+    6 statement: severity_stmt .
+
+    $default  reduce using rule 6 (statement)
+
+
+State 21
+
+    7 statement: ambulance_stmt .
+
+    $default  reduce using rule 7 (statement)
+
+
+State 22
+
+    8 statement: hospital_stmt .
+
+    $default  reduce using rule 8 (statement)
+
+
+State 23
+
+    9 statement: dispatch_stmt .
+
+    $default  reduce using rule 9 (statement)
+
+
+State 24
+
+   10 statement: route_stmt .
+
+    $default  reduce using rule 10 (statement)
+
+
+State 25
+
+   11 statement: priority_stmt .
+
+    $default  reduce using rule 11 (statement)
+
+
+State 26
+
+   12 statement: status_stmt .
+
+    $default  reduce using rule 12 (statement)
+
+
+State 27
+
+   13 statement: arrive_stmt .
+
+    $default  reduce using rule 13 (statement)
+
+
+State 28
+
+   14 statement: transfer_stmt .
+
+    $default  reduce using rule 14 (statement)
+
+
+State 29
+
+   15 statement: cancel_stmt .
+
+    $default  reduce using rule 15 (statement)
+
+
+State 30
+
+   16 statement: report_stmt .
+
+    $default  reduce using rule 16 (statement)
+
+
+State 31
+
+   19 patient_stmt: TOK_PATIENT error .
+
+    $default  reduce using rule 19 (patient_stmt)
+
+
+State 32
+
+   18 patient_stmt: TOK_PATIENT TOK_IDENTIFIER .
+
+    $default  reduce using rule 18 (patient_stmt)
+
+
+State 33
+
+   21 location_stmt: TOK_LOCATION error .
+
+    $default  reduce using rule 21 (location_stmt)
+
+
+State 34
+
+   20 location_stmt: TOK_LOCATION TOK_IDENTIFIER . TOK_STRING
+
+    TOK_STRING  shift, and go to state 57
+
+
+State 35
+
+   23 severity_stmt: TOK_SEVERITY error .
+
+    $default  reduce using rule 23 (severity_stmt)
+
+
+State 36
+
+   22 severity_stmt: TOK_SEVERITY TOK_IDENTIFIER . severity_val
+
+    TOK_CRITICAL  shift, and go to state 58
+    TOK_HIGH      shift, and go to state 59
+    TOK_MEDIUM    shift, and go to state 60
+    TOK_LOW       shift, and go to state 61
+
+    severity_val  go to state 62
+
+
+State 37
+
+   29 ambulance_stmt: TOK_AMBULANCE error .
+
+    $default  reduce using rule 29 (ambulance_stmt)
+
+
+State 38
+
+   28 ambulance_stmt: TOK_AMBULANCE TOK_IDENTIFIER .
+
+    $default  reduce using rule 28 (ambulance_stmt)
+
+
+State 39
+
+   31 hospital_stmt: TOK_HOSPITAL error .
+
+    $default  reduce using rule 31 (hospital_stmt)
+
+
+State 40
+
+   30 hospital_stmt: TOK_HOSPITAL TOK_IDENTIFIER . TOK_STRING
+
+    TOK_STRING  shift, and go to state 63
+
+
+State 41
+
+   34 dispatch_stmt: TOK_DISPATCH error .
+
+    $default  reduce using rule 34 (dispatch_stmt)
+
+
+State 42
+
+   32 dispatch_stmt: TOK_DISPATCH TOK_IDENTIFIER . TOK_IDENTIFIER
+   33              | TOK_DISPATCH TOK_IDENTIFIER .
+
+    TOK_IDENTIFIER  shift, and go to state 64
+
+    $default  reduce using rule 33 (dispatch_stmt)
+
+
+State 43
+
+   36 route_stmt: TOK_ROUTE error .
+
+    $default  reduce using rule 36 (route_stmt)
+
+
+State 44
+
+   35 route_stmt: TOK_ROUTE TOK_IDENTIFIER . TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 65
+
+
+State 45
+
+   38 priority_stmt: TOK_PRIORITY error .
+
+    $default  reduce using rule 38 (priority_stmt)
+
+
+State 46
+
+   37 priority_stmt: TOK_PRIORITY TOK_IDENTIFIER . priority_val
+
+    TOK_HIGH    shift, and go to state 66
+    TOK_MEDIUM  shift, and go to state 67
+    TOK_LOW     shift, and go to state 68
+
+    priority_val  go to state 69
+
+
+State 47
+
+   43 status_stmt: TOK_STATUS error .
+
+    $default  reduce using rule 43 (status_stmt)
+
+
+State 48
+
+   42 status_stmt: TOK_STATUS TOK_IDENTIFIER .
+
+    $default  reduce using rule 42 (status_stmt)
+
+
+State 49
+
+   45 arrive_stmt: TOK_ARRIVE error .
+
+    $default  reduce using rule 45 (arrive_stmt)
+
+
+State 50
+
+   44 arrive_stmt: TOK_ARRIVE TOK_IDENTIFIER .
+
+    $default  reduce using rule 44 (arrive_stmt)
+
+
+State 51
+
+   47 transfer_stmt: TOK_TRANSFER error .
+
+    $default  reduce using rule 47 (transfer_stmt)
+
+
+State 52
+
+   46 transfer_stmt: TOK_TRANSFER TOK_IDENTIFIER . TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 70
+
+
+State 53
+
+   49 cancel_stmt: TOK_CANCEL error .
+
+    $default  reduce using rule 49 (cancel_stmt)
+
+
+State 54
+
+   48 cancel_stmt: TOK_CANCEL TOK_IDENTIFIER .
+
+    $default  reduce using rule 48 (cancel_stmt)
+
+
+State 55
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 56
+
+    3 statement_list: statement_list statement .
+
+    $default  reduce using rule 3 (statement_list)
+
+
+State 57
+
+   20 location_stmt: TOK_LOCATION TOK_IDENTIFIER TOK_STRING .
+
+    $default  reduce using rule 20 (location_stmt)
+
+
+State 58
+
+   27 severity_val: TOK_CRITICAL .
+
+    $default  reduce using rule 27 (severity_val)
+
+
+State 59
+
+   26 severity_val: TOK_HIGH .
+
+    $default  reduce using rule 26 (severity_val)
+
+
+State 60
+
+   25 severity_val: TOK_MEDIUM .
+
+    $default  reduce using rule 25 (severity_val)
+
+
+State 61
+
+   24 severity_val: TOK_LOW .
+
+    $default  reduce using rule 24 (severity_val)
+
+
+State 62
+
+   22 severity_stmt: TOK_SEVERITY TOK_IDENTIFIER severity_val .
+
+    $default  reduce using rule 22 (severity_stmt)
+
+
+State 63
+
+   30 hospital_stmt: TOK_HOSPITAL TOK_IDENTIFIER TOK_STRING .
+
+    $default  reduce using rule 30 (hospital_stmt)
+
+
+State 64
+
+   32 dispatch_stmt: TOK_DISPATCH TOK_IDENTIFIER TOK_IDENTIFIER .
+
+    $default  reduce using rule 32 (dispatch_stmt)
+
+
+State 65
+
+   35 route_stmt: TOK_ROUTE TOK_IDENTIFIER TOK_IDENTIFIER .
+
+    $default  reduce using rule 35 (route_stmt)
+
+
+State 66
+
+   41 priority_val: TOK_HIGH .
+
+    $default  reduce using rule 41 (priority_val)
+
+
+State 67
+
+   40 priority_val: TOK_MEDIUM .
+
+    $default  reduce using rule 40 (priority_val)
+
+
+State 68
+
+   39 priority_val: TOK_LOW .
+
+    $default  reduce using rule 39 (priority_val)
+
+
+State 69
+
+   37 priority_stmt: TOK_PRIORITY TOK_IDENTIFIER priority_val .
+
+    $default  reduce using rule 37 (priority_stmt)
+
+
+State 70
+
+   46 transfer_stmt: TOK_TRANSFER TOK_IDENTIFIER TOK_IDENTIFIER .
+
+    $default  reduce using rule 46 (transfer_stmt)

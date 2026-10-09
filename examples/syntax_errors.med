@@ -1,0 +1,27 @@
+// syntax_errors.med
+// MedRoute Example 3 — Intentional Syntax Errors Demo
+// ============================================================
+// This program contains SYNTAX ERRORS to demonstrate the
+// compiler's error detection and reporting capability.
+//
+// Expected: SYNTAX_ERROR status
+
+// Valid statements
+PATIENT P101
+LOCATION P101 "Sardar Patel Road"
+AMBULANCE A12
+
+// ERROR 1: DISPATCH missing patient_id
+// Expected: DISPATCH <ambulance_id> <patient_id>
+DISPATCH A12
+
+// ERROR 2: HOSPITAL missing name string
+// Expected: HOSPITAL <hospital_id> "<name>"
+HOSPITAL H01
+
+// ERROR 3: SEVERITY missing level
+// Expected: SEVERITY <patient_id> LOW|MEDIUM|HIGH|CRITICAL
+SEVERITY P101
+
+// This should still be parsed after error recovery
+REPORT

@@ -1,0 +1,42 @@
+// semantic_errors.med
+// MedRoute Example 4 — Intentional Semantic Errors Demo
+// ============================================================
+// This program has VALID SYNTAX but INVALID SEMANTICS.
+// The compiler must detect and report all semantic violations.
+//
+// Expected: SEMANTIC_ERROR status
+
+// Register patient P101
+PATIENT P101
+LOCATION P101 "Sector 21"
+
+// ERROR 1: Duplicate patient registration
+PATIENT P101
+
+// ERROR 2: Dispatch with unregistered ambulance A99
+DISPATCH A99 P101
+
+// Register ambulance correctly
+AMBULANCE A12
+HOSPITAL H01 "General Hospital"
+
+// Dispatch OK
+DISPATCH A12 P101
+
+// ERROR 3: Dispatch again — ambulance A12 already DISPATCHED
+DISPATCH A12 P101
+
+// ERROR 4: ARRIVE before dispatch on a different (nonexistent) ambulance
+ARRIVE A50
+
+// ERROR 5: TRANSFER before ambulance has arrived (A12 is still DISPATCHED, not ARRIVED)
+TRANSFER P101 H01
+
+// ERROR 6: Invalid severity value
+PATIENT P102
+SEVERITY P102 EXTREME
+
+// ERROR 7: ROUTE to unregistered hospital
+ROUTE A12 H99
+
+REPORT

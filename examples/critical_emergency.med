@@ -1,0 +1,30 @@
+// critical_emergency.med
+// MedRoute Example 1 — Full single-patient critical dispatch
+// ============================================================
+// Demonstrates the complete compilation pipeline:
+// Patient registration → Dispatch → Arrival → Transfer
+
+// Register emergency patient
+PATIENT P101
+LOCATION P101 "Sardar Patel Road"
+SEVERITY P101 CRITICAL
+
+// Register resources
+AMBULANCE A12
+HOSPITAL H01 "City Hospital"
+
+// Dispatch and route
+DISPATCH A12 P101
+ROUTE A12 H01
+PRIORITY A12 HIGH
+
+// Check current status
+STATUS A12
+
+// Simulate arrival and patient handover
+ARRIVE A12
+TRANSFER P101 H01
+
+// Print final system state
+STATUS A12
+REPORT
