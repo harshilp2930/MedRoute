@@ -18,7 +18,6 @@ ROUTE A12 H01
 PRIORITY A12 HIGH
 
 STATUS A12
-ARRIVE A12
 TRANSFER P101 H01
 STATUS A12
 REPORT
@@ -32,15 +31,15 @@ const SEV_C: Record<string, string> = {
   CRITICAL: '#e5534b', HIGH: '#e09440', MEDIUM: '#c9a73d', LOW: '#57ab5a',
 };
 const STATE_C: Record<string, string> = {
-  AVAILABLE: '#57ab5a', DISPATCHED: '#c9a73d', ARRIVED: '#539bf5',
-  COMPLETED: '#57ab5a', CANCELLED: '#e5534b', REGISTERED: '#768390',
+  AVAILABLE: '#57ab5a', DISPATCHED: '#c9a73d',
+  COMPLETED: '#57ab5a', REGISTERED: '#768390',
   IN_TRANSIT: '#e09440', TRANSFERRED: '#57ab5a', ACTIVE: '#57ab5a',
 };
 const IR_C: Record<string, string> = {
   REGISTER_PATIENT: '#539bf5', SET_LOCATION: '#768390', SET_SEVERITY: '#e09440',
   REGISTER_AMBULANCE: '#57ab5a', REGISTER_HOSPITAL: '#57ab5a', DISPATCH: '#e5534b',
   ASSIGN_ROUTE: '#539bf5', SET_PRIORITY: '#e09440', STATUS: '#768390',
-  ARRIVE: '#57ab5a', TRANSFER: '#c9a73d', CANCEL: '#e5534b', REPORT: '#8b949e',
+  DISTANCE: '#57ab5a', TRANSFER: '#c9a73d', SPEED: '#e5534b', REPORT: '#8b949e',
 };
 
 function Badge({ val, map }: { val: string; map: Record<string, string> }) {
@@ -100,7 +99,7 @@ export default function App() {
     return () => document.removeEventListener('mousedown', h);
   }, [showFiles]);
 
-  const handleMount = useCallback((ed: any, mon: any) => {
+  const handleMount = useCallback((_ed: any, mon: any) => {
     registerMedRouteLanguage(mon);
     // Initial theme is set by the Editor component prop
   }, []);

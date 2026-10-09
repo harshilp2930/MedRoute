@@ -66,8 +66,8 @@ void yyerror(const char *msg) {
  * TOKEN DECLARATIONS
  * ============================================================ */
 %token TOK_PATIENT TOK_LOCATION TOK_SEVERITY TOK_AMBULANCE TOK_HOSPITAL
-%token TOK_DISPATCH TOK_ROUTE TOK_PRIORITY TOK_STATUS TOK_ARRIVE
-%token TOK_TRANSFER TOK_CANCEL TOK_REGISTER TOK_AVAILABLE TOK_ASSIGN TOK_REPORT
+%token TOK_DISPATCH TOK_ROUTE TOK_PRIORITY TOK_STATUS TOK_DISTANCE
+%token TOK_TRANSFER TOK_SPEED TOK_REGISTER TOK_AVAILABLE TOK_ASSIGN TOK_REPORT
 
 %token TOK_CRITICAL TOK_HIGH TOK_MEDIUM TOK_LOW
 
@@ -116,9 +116,9 @@ statement
     | route_stmt
     | priority_stmt
     | status_stmt
-    | arrive_stmt
+    | distance_stmt
     | transfer_stmt
-    | cancel_stmt
+    | speed_stmt
     | report_stmt
     | error          { yyerrok; }
     ;
@@ -385,27 +385,28 @@ status_stmt
     ;
 
 /* ----------------------------------------------------------
- * ARRIVE <ambulance_id>
+ * DISTANCE <ambulance_id> <patient_id> <value>
  * ---------------------------------------------------------- */
-arrive_stmt
-    : TOK_ARRIVE TOK_IDENTIFIER
+distance_stmt
+    : TOK_DISTANCE TOK_IDENTIFIER TOK_IDENTIFIER TOK_INTEGER
         {
             int ln = yylineno_val;
             char pt[256];
             snprintf(pt, sizeof(pt),
-                "{\"stmt\":\"ARRIVE\",\"ambulance\":\"%s\",\"line\":%d}", $2, ln);
+                "{\"stmt\":\"DISTANCE\",\"ambulance\":\"%s\",\"patient\":\"%s\",\"distance\":%d,\"line\":%d}", 
+                $2, $3, $4, ln);
             if (g_pt_pos > 0) pt_append(",");
             pt_append(pt);
 
-            if (sem_check_arrive(g_symtable, $2, ln) == SEM_OK)
-                ir_emit_arrive(g_ir, $2, ln);
+            if (sem_check_distance(g_symtable, $2, $3, $4, ln) == SEM_OK)
+                ir_emit_distance(g_ir, $2, $3, $4, ln);
 
             g_stmt_count++;
-            free($2);
+            free($2); free($3);
         }
-    | TOK_ARRIVE error
+    | TOK_DISTANCE error
         {
-            yyerror("Invalid ARRIVE statement. Expected: ARRIVE <ambulance_id>");
+            yyerror("Invalid DISTANCE statement. Expected: DISTANCE <ambulance_id> <patient_id> <distance>");
             yyerrok;
         }
     ;
@@ -438,27 +439,28 @@ transfer_stmt
     ;
 
 /* ----------------------------------------------------------
- * CANCEL <ambulance_id>
+ * SPEED <ambulance_id> <value>
  * ---------------------------------------------------------- */
-cancel_stmt
-    : TOK_CANCEL TOK_IDENTIFIER
+speed_stmt
+    : TOK_SPEED TOK_IDENTIFIER TOK_INTEGER
         {
             int ln = yylineno_val;
             char pt[256];
             snprintf(pt, sizeof(pt),
-                "{\"stmt\":\"CANCEL\",\"ambulance\":\"%s\",\"line\":%d}", $2, ln);
+                "{\"stmt\":\"SPEED\",\"ambulance\":\"%s\",\"speed\":%d,\"line\":%d}", 
+                $2, $3, ln);
             if (g_pt_pos > 0) pt_append(",");
             pt_append(pt);
 
-            if (sem_check_cancel(g_symtable, $2, ln) == SEM_OK)
-                ir_emit_cancel(g_ir, $2, ln);
+            if (sem_check_speed(g_symtable, $2, $3, ln) == SEM_OK)
+                ir_emit_speed(g_ir, $2, $3, ln);
 
             g_stmt_count++;
             free($2);
         }
-    | TOK_CANCEL error
+    | TOK_SPEED error
         {
-            yyerror("Invalid CANCEL statement. Expected: CANCEL <ambulance_id>");
+            yyerror("Invalid SPEED statement. Expected: SPEED <ambulance_id> <speed>");
             yyerrok;
         }
     ;

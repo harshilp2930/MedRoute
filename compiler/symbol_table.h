@@ -37,9 +37,20 @@ typedef struct AmbulanceEntry {
     char            assigned_patient[MAX_ID_LEN];   /* "" if none */
     char            route_hospital[MAX_ID_LEN];     /* "" if none */
     Priority        priority;
+    int             speed;
     int             line_declared;
     struct AmbulanceEntry *next;
 } AmbulanceEntry;
+
+/* ============================================================
+ * DISTANCE ENTRY
+ * ============================================================ */
+typedef struct DistanceEntry {
+    char ambulance_id[MAX_ID_LEN];
+    char patient_id[MAX_ID_LEN];
+    int  distance;
+    struct DistanceEntry *next;
+} DistanceEntry;
 
 /* ============================================================
  * HOSPITAL ENTRY
@@ -59,6 +70,7 @@ typedef struct SymbolTable {
     PatientEntry   *patients[HASH_SIZE];
     AmbulanceEntry *ambulances[HASH_SIZE];
     HospitalEntry  *hospitals[HASH_SIZE];
+    DistanceEntry  *distances;
 
     int patient_count;
     int ambulance_count;
@@ -85,6 +97,11 @@ AmbulanceEntry*  symtable_get_ambulance   (SymbolTable *st, const char *id);
 /* Hospitals */
 int             symtable_add_hospital   (SymbolTable *st, const char *id, const char *name, int line);
 HospitalEntry*  symtable_get_hospital   (SymbolTable *st, const char *id);
+
+/* Speed & Distance */
+void symtable_set_speed(SymbolTable *st, const char *id, int speed);
+void symtable_set_distance(SymbolTable *st, const char *amb_id, const char *pat_id, int distance);
+int  symtable_get_distance(SymbolTable *st, const char *amb_id, const char *pat_id);
 
 /* Dump (for JSON output) */
 void symtable_dump_json(SymbolTable *st, FILE *out);

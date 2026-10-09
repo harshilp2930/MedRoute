@@ -10,7 +10,6 @@ Terminals unused in grammar
     TOK_GT
     TOK_LT
     TOK_ASSIGN_OP
-    TOK_INTEGER
     TOK_FLOAT
 
 
@@ -32,9 +31,9 @@ Grammar
    10          | route_stmt
    11          | priority_stmt
    12          | status_stmt
-   13          | arrive_stmt
+   13          | distance_stmt
    14          | transfer_stmt
-   15          | cancel_stmt
+   15          | speed_stmt
    16          | report_stmt
    17          | error
 
@@ -75,14 +74,14 @@ Grammar
    42 status_stmt: TOK_STATUS TOK_IDENTIFIER
    43            | TOK_STATUS error
 
-   44 arrive_stmt: TOK_ARRIVE TOK_IDENTIFIER
-   45            | TOK_ARRIVE error
+   44 distance_stmt: TOK_DISTANCE TOK_IDENTIFIER TOK_IDENTIFIER TOK_INTEGER
+   45              | TOK_DISTANCE error
 
    46 transfer_stmt: TOK_TRANSFER TOK_IDENTIFIER TOK_IDENTIFIER
    47              | TOK_TRANSFER error
 
-   48 cancel_stmt: TOK_CANCEL TOK_IDENTIFIER
-   49            | TOK_CANCEL error
+   48 speed_stmt: TOK_SPEED TOK_IDENTIFIER TOK_INTEGER
+   49           | TOK_SPEED error
 
    50 report_stmt: TOK_REPORT
 
@@ -100,9 +99,9 @@ Terminals, with rules where they appear
     TOK_ROUTE (264) 35 36
     TOK_PRIORITY (265) 37 38
     TOK_STATUS (266) 42 43
-    TOK_ARRIVE (267) 44 45
+    TOK_DISTANCE (267) 44 45
     TOK_TRANSFER (268) 46 47
-    TOK_CANCEL (269) 48 49
+    TOK_SPEED (269) 48 49
     TOK_REGISTER (270)
     TOK_AVAILABLE (271)
     TOK_ASSIGN (272)
@@ -120,7 +119,7 @@ Terminals, with rules where they appear
     TOK_ASSIGN_OP (284)
     TOK_IDENTIFIER <str_val> (285) 18 20 22 28 30 32 33 35 37 42 44 46 48
     TOK_STRING <str_val> (286) 20 30
-    TOK_INTEGER <int_val> (287)
+    TOK_INTEGER <int_val> (287) 44 48
     TOK_FLOAT <float_val> (288)
 
 
@@ -170,13 +169,13 @@ Nonterminals, with rules where they appear
     status_stmt (48)
         on left: 42 43
         on right: 12
-    arrive_stmt (49)
+    distance_stmt (49)
         on left: 44 45
         on right: 13
     transfer_stmt (50)
         on left: 46 47
         on right: 14
-    cancel_stmt (51)
+    speed_stmt (51)
         on left: 48 49
         on right: 15
     report_stmt (52)
@@ -198,9 +197,9 @@ State 0
     TOK_ROUTE      shift, and go to state 8
     TOK_PRIORITY   shift, and go to state 9
     TOK_STATUS     shift, and go to state 10
-    TOK_ARRIVE     shift, and go to state 11
+    TOK_DISTANCE   shift, and go to state 11
     TOK_TRANSFER   shift, and go to state 12
-    TOK_CANCEL     shift, and go to state 13
+    TOK_SPEED      shift, and go to state 13
     TOK_REPORT     shift, and go to state 14
 
     program         go to state 15
@@ -215,9 +214,9 @@ State 0
     route_stmt      go to state 24
     priority_stmt   go to state 25
     status_stmt     go to state 26
-    arrive_stmt     go to state 27
+    distance_stmt   go to state 27
     transfer_stmt   go to state 28
-    cancel_stmt     go to state 29
+    speed_stmt      go to state 29
     report_stmt     go to state 30
 
 
@@ -312,8 +311,8 @@ State 10
 
 State 11
 
-   44 arrive_stmt: TOK_ARRIVE . TOK_IDENTIFIER
-   45            | TOK_ARRIVE . error
+   44 distance_stmt: TOK_DISTANCE . TOK_IDENTIFIER TOK_IDENTIFIER TOK_INTEGER
+   45              | TOK_DISTANCE . error
 
     error           shift, and go to state 49
     TOK_IDENTIFIER  shift, and go to state 50
@@ -330,8 +329,8 @@ State 12
 
 State 13
 
-   48 cancel_stmt: TOK_CANCEL . TOK_IDENTIFIER
-   49            | TOK_CANCEL . error
+   48 speed_stmt: TOK_SPEED . TOK_IDENTIFIER TOK_INTEGER
+   49           | TOK_SPEED . error
 
     error           shift, and go to state 53
     TOK_IDENTIFIER  shift, and go to state 54
@@ -366,9 +365,9 @@ State 16
     TOK_ROUTE      shift, and go to state 8
     TOK_PRIORITY   shift, and go to state 9
     TOK_STATUS     shift, and go to state 10
-    TOK_ARRIVE     shift, and go to state 11
+    TOK_DISTANCE   shift, and go to state 11
     TOK_TRANSFER   shift, and go to state 12
-    TOK_CANCEL     shift, and go to state 13
+    TOK_SPEED      shift, and go to state 13
     TOK_REPORT     shift, and go to state 14
 
     $end  reduce using rule 1 (program)
@@ -383,9 +382,9 @@ State 16
     route_stmt      go to state 24
     priority_stmt   go to state 25
     status_stmt     go to state 26
-    arrive_stmt     go to state 27
+    distance_stmt   go to state 27
     transfer_stmt   go to state 28
-    cancel_stmt     go to state 29
+    speed_stmt      go to state 29
     report_stmt     go to state 30
 
 
@@ -461,7 +460,7 @@ State 26
 
 State 27
 
-   13 statement: arrive_stmt .
+   13 statement: distance_stmt .
 
     $default  reduce using rule 13 (statement)
 
@@ -475,7 +474,7 @@ State 28
 
 State 29
 
-   15 statement: cancel_stmt .
+   15 statement: speed_stmt .
 
     $default  reduce using rule 15 (statement)
 
@@ -627,16 +626,16 @@ State 48
 
 State 49
 
-   45 arrive_stmt: TOK_ARRIVE error .
+   45 distance_stmt: TOK_DISTANCE error .
 
-    $default  reduce using rule 45 (arrive_stmt)
+    $default  reduce using rule 45 (distance_stmt)
 
 
 State 50
 
-   44 arrive_stmt: TOK_ARRIVE TOK_IDENTIFIER .
+   44 distance_stmt: TOK_DISTANCE TOK_IDENTIFIER . TOK_IDENTIFIER TOK_INTEGER
 
-    $default  reduce using rule 44 (arrive_stmt)
+    TOK_IDENTIFIER  shift, and go to state 70
 
 
 State 51
@@ -650,21 +649,21 @@ State 52
 
    46 transfer_stmt: TOK_TRANSFER TOK_IDENTIFIER . TOK_IDENTIFIER
 
-    TOK_IDENTIFIER  shift, and go to state 70
+    TOK_IDENTIFIER  shift, and go to state 71
 
 
 State 53
 
-   49 cancel_stmt: TOK_CANCEL error .
+   49 speed_stmt: TOK_SPEED error .
 
-    $default  reduce using rule 49 (cancel_stmt)
+    $default  reduce using rule 49 (speed_stmt)
 
 
 State 54
 
-   48 cancel_stmt: TOK_CANCEL TOK_IDENTIFIER .
+   48 speed_stmt: TOK_SPEED TOK_IDENTIFIER . TOK_INTEGER
 
-    $default  reduce using rule 48 (cancel_stmt)
+    TOK_INTEGER  shift, and go to state 72
 
 
 State 55
@@ -774,6 +773,27 @@ State 69
 
 State 70
 
+   44 distance_stmt: TOK_DISTANCE TOK_IDENTIFIER TOK_IDENTIFIER . TOK_INTEGER
+
+    TOK_INTEGER  shift, and go to state 73
+
+
+State 71
+
    46 transfer_stmt: TOK_TRANSFER TOK_IDENTIFIER TOK_IDENTIFIER .
 
     $default  reduce using rule 46 (transfer_stmt)
+
+
+State 72
+
+   48 speed_stmt: TOK_SPEED TOK_IDENTIFIER TOK_INTEGER .
+
+    $default  reduce using rule 48 (speed_stmt)
+
+
+State 73
+
+   44 distance_stmt: TOK_DISTANCE TOK_IDENTIFIER TOK_IDENTIFIER TOK_INTEGER .
+
+    $default  reduce using rule 44 (distance_stmt)

@@ -16,9 +16,9 @@ The language is case-sensitive for keywords (typically uppercase):
 *   `ROUTE`
 *   `PRIORITY`
 *   `STATUS`
-*   `ARRIVE`
+*   `DISTANCE`
 *   `TRANSFER`
-*   `CANCEL`
+*   `SPEED`
 *   `REPORT`
 
 ### Identifiers
@@ -84,19 +84,19 @@ PRIORITY <ambulance_id> <priority_level>
 STATUS <ambulance_id>
 ```
 
-**Mark Ambulance Arrival:**
+**Set Distance (Ambulance to Patient):**
 ```medroute
-ARRIVE <ambulance_id>
+DISTANCE <ambulance_id> <patient_id> <distance>
+```
+
+**Set Speed:**
+```medroute
+SPEED <ambulance_id> <speed>
 ```
 
 **Transfer Patient to Hospital:**
 ```medroute
 TRANSFER <patient_id> <hospital_id>
-```
-
-**Cancel Dispatch:**
-```medroute
-CANCEL <ambulance_id>
 ```
 
 **Generate Final Report:**
@@ -108,6 +108,6 @@ REPORT
 The MedRoute compiler strictly enforces logical emergency protocols:
 1.  **Undeclared Entities**: An ambulance or patient cannot be dispatched if they haven't been declared.
 2.  **Duplicate Declarations**: You cannot declare two entities with the same ID.
-3.  **Logical Flow**: An ambulance must be `DISPATCH`ed before it can `ARRIVE`.
-4.  **Transfer Logic**: A patient can only be `TRANSFER`red if an ambulance has arrived at their location.
+3.  **Missing Data**: An ambulance cannot be dispatched if its distance or speed is missing.
+4.  **Transfer Logic**: A patient can only be `TRANSFER`red if they have been assigned to an ambulance.
 5.  **Availability**: An ambulance cannot be dispatched to two different patients simultaneously unless it has completed the previous transfer.

@@ -23,5 +23,9 @@ HOSPITAL H01
 // Expected: SEVERITY <patient_id> LOW|MEDIUM|HIGH|CRITICAL
 SEVERITY P101
 
+// ERROR 4: DISTANCE missing patient_id
+// Expected: DISTANCE <ambulance_id> <patient_id> <distance>
+DISTANCE A12 5
+
 // This should still be parsed after error recovery
 REPORT

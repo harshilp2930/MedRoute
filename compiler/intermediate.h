@@ -29,9 +29,9 @@ void ir_emit_dispatch           (IRProgram *p, const char *aid,  const char *pid
 void ir_emit_assign_route       (IRProgram *p, const char *aid,  const char *hid,  int line);
 void ir_emit_set_priority       (IRProgram *p, const char *aid,  const char *pri,  int line);
 void ir_emit_status             (IRProgram *p, const char *aid,  int line);
-void ir_emit_arrive             (IRProgram *p, const char *aid,  int line);
+void ir_emit_distance           (IRProgram *p, const char *aid,  const char *pid, int dist, int line);
 void ir_emit_transfer           (IRProgram *p, const char *pid,  const char *hid,  int line);
-void ir_emit_cancel             (IRProgram *p, const char *aid,  int line);
+void ir_emit_speed              (IRProgram *p, const char *aid,  int speed,  int line);
 void ir_emit_report             (IRProgram *p, int line);
 
 /* Output */

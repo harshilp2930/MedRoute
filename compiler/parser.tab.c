@@ -162,9 +162,9 @@ enum yysymbol_kind_t
   YYSYMBOL_TOK_ROUTE = 9,                  /* TOK_ROUTE  */
   YYSYMBOL_TOK_PRIORITY = 10,              /* TOK_PRIORITY  */
   YYSYMBOL_TOK_STATUS = 11,                /* TOK_STATUS  */
-  YYSYMBOL_TOK_ARRIVE = 12,                /* TOK_ARRIVE  */
+  YYSYMBOL_TOK_DISTANCE = 12,              /* TOK_DISTANCE  */
   YYSYMBOL_TOK_TRANSFER = 13,              /* TOK_TRANSFER  */
-  YYSYMBOL_TOK_CANCEL = 14,                /* TOK_CANCEL  */
+  YYSYMBOL_TOK_SPEED = 14,                 /* TOK_SPEED  */
   YYSYMBOL_TOK_REGISTER = 15,              /* TOK_REGISTER  */
   YYSYMBOL_TOK_AVAILABLE = 16,             /* TOK_AVAILABLE  */
   YYSYMBOL_TOK_ASSIGN = 17,                /* TOK_ASSIGN  */
@@ -199,9 +199,9 @@ enum yysymbol_kind_t
   YYSYMBOL_priority_stmt = 46,             /* priority_stmt  */
   YYSYMBOL_priority_val = 47,              /* priority_val  */
   YYSYMBOL_status_stmt = 48,               /* status_stmt  */
-  YYSYMBOL_arrive_stmt = 49,               /* arrive_stmt  */
+  YYSYMBOL_distance_stmt = 49,             /* distance_stmt  */
   YYSYMBOL_transfer_stmt = 50,             /* transfer_stmt  */
-  YYSYMBOL_cancel_stmt = 51,               /* cancel_stmt  */
+  YYSYMBOL_speed_stmt = 51,                /* speed_stmt  */
   YYSYMBOL_report_stmt = 52                /* report_stmt  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
@@ -539,7 +539,7 @@ union yyalloc
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  51
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  71
+#define YYNSTATES  74
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   288
@@ -595,8 +595,8 @@ static const yytype_int16 yyrline[] =
      115,   116,   117,   118,   119,   120,   121,   122,   123,   130,
      145,   156,   172,   183,   200,   208,   209,   210,   211,   218,
      233,   244,   260,   271,   287,   293,   304,   320,   331,   348,
-     356,   357,   358,   365,   380,   391,   406,   417,   433,   444,
-     459,   470
+     356,   357,   358,   365,   380,   391,   407,   418,   434,   445,
+     461,   472
 };
 #endif
 
@@ -614,16 +614,16 @@ static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "TOK_PATIENT",
   "TOK_LOCATION", "TOK_SEVERITY", "TOK_AMBULANCE", "TOK_HOSPITAL",
-  "TOK_DISPATCH", "TOK_ROUTE", "TOK_PRIORITY", "TOK_STATUS", "TOK_ARRIVE",
-  "TOK_TRANSFER", "TOK_CANCEL", "TOK_REGISTER", "TOK_AVAILABLE",
-  "TOK_ASSIGN", "TOK_REPORT", "TOK_CRITICAL", "TOK_HIGH", "TOK_MEDIUM",
-  "TOK_LOW", "TOK_EQ", "TOK_NEQ", "TOK_GTE", "TOK_LTE", "TOK_GT", "TOK_LT",
-  "TOK_ASSIGN_OP", "TOK_IDENTIFIER", "TOK_STRING", "TOK_INTEGER",
-  "TOK_FLOAT", "$accept", "program", "statement_list", "statement",
-  "patient_stmt", "location_stmt", "severity_stmt", "severity_val",
-  "ambulance_stmt", "hospital_stmt", "dispatch_stmt", "route_stmt",
-  "priority_stmt", "priority_val", "status_stmt", "arrive_stmt",
-  "transfer_stmt", "cancel_stmt", "report_stmt", YY_NULLPTR
+  "TOK_DISPATCH", "TOK_ROUTE", "TOK_PRIORITY", "TOK_STATUS",
+  "TOK_DISTANCE", "TOK_TRANSFER", "TOK_SPEED", "TOK_REGISTER",
+  "TOK_AVAILABLE", "TOK_ASSIGN", "TOK_REPORT", "TOK_CRITICAL", "TOK_HIGH",
+  "TOK_MEDIUM", "TOK_LOW", "TOK_EQ", "TOK_NEQ", "TOK_GTE", "TOK_LTE",
+  "TOK_GT", "TOK_LT", "TOK_ASSIGN_OP", "TOK_IDENTIFIER", "TOK_STRING",
+  "TOK_INTEGER", "TOK_FLOAT", "$accept", "program", "statement_list",
+  "statement", "patient_stmt", "location_stmt", "severity_stmt",
+  "severity_val", "ambulance_stmt", "hospital_stmt", "dispatch_stmt",
+  "route_stmt", "priority_stmt", "priority_val", "status_stmt",
+  "distance_stmt", "transfer_stmt", "speed_stmt", "report_stmt", YY_NULLPTR
 };
 
 static const char *
@@ -652,9 +652,9 @@ static const yytype_int8 yypact[] =
      -12,   -12,   -12,   -12,   -12,   -12,   -12,   -12,   -12,   -12,
      -12,   -12,   -12,   -12,   -11,   -12,    -7,   -12,   -12,   -12,
      -10,   -12,    -8,   -12,    -6,   -12,    -4,   -12,   -12,   -12,
-     -12,   -12,    -5,   -12,   -12,   -12,   -12,   -12,   -12,   -12,
+      -5,   -12,    -3,   -12,    -9,   -12,   -12,   -12,   -12,   -12,
      -12,   -12,   -12,   -12,   -12,   -12,   -12,   -12,   -12,   -12,
-     -12
+      11,   -12,   -12,   -12
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -667,15 +667,15 @@ static const yytype_int8 yydefact[] =
        7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
       17,    20,    19,    22,     0,    24,     0,    30,    29,    32,
        0,    35,    34,    37,     0,    39,     0,    44,    43,    46,
-      45,    48,     0,    50,    49,     1,     4,    21,    28,    27,
+       0,    48,     0,    50,     0,     1,     4,    21,    28,    27,
       26,    25,    23,    31,    33,    36,    42,    41,    40,    38,
-      47
+       0,    47,    49,    45
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -12,   -12,   -12,    11,   -12,   -12,   -12,   -12,   -12,   -12,
+     -12,   -12,   -12,    12,   -12,   -12,   -12,   -12,   -12,   -12,
      -12,   -12,   -12,   -12,   -12,   -12,   -12,   -12,   -12
 };
 
@@ -693,9 +693,9 @@ static const yytype_int8 yytable[] =
 {
       31,    33,    35,    37,    39,    41,    43,    45,    47,    49,
       51,    53,    58,    59,    60,    61,    66,    67,    68,    55,
-      57,    63,    64,     0,    65,    70,     0,    56,     0,    32,
+      57,    63,    64,    72,    65,    70,     0,    71,    56,    32,
       34,    36,    38,    40,    42,    44,    46,    48,    50,    52,
-      54,    -2,     1,     0,     2,     3,     4,     5,     6,     7,
+      54,    -2,     1,    73,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,     0,     0,     1,    14,
        2,     3,     4,     5,     6,     7,     8,     9,    10,    11,
       12,    13,     0,     0,     0,    14
@@ -705,9 +705,9 @@ static const yytype_int8 yycheck[] =
 {
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,    19,    20,    21,    22,    20,    21,    22,     0,
-      31,    31,    30,    -1,    30,    30,    -1,    16,    -1,    30,
+      31,    31,    30,    32,    30,    30,    -1,    30,    16,    30,
       30,    30,    30,    30,    30,    30,    30,    30,    30,    30,
-      30,     0,     1,    -1,     3,     4,     5,     6,     7,     8,
+      30,     0,     1,    32,     3,     4,     5,     6,     7,     8,
        9,    10,    11,    12,    13,    14,    -1,    -1,     1,    18,
        3,     4,     5,     6,     7,     8,     9,    10,    11,    12,
       13,    14,    -1,    -1,    -1,    18
@@ -724,7 +724,7 @@ static const yytype_int8 yystos[] =
       30,     1,    30,     1,    30,     1,    30,     1,    30,     1,
       30,     1,    30,     1,    30,     0,    37,    31,    19,    20,
       21,    22,    41,    31,    30,    30,    20,    21,    22,    47,
-      30
+      30,    30,    32,    32
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
@@ -745,7 +745,7 @@ static const yytype_int8 yyr2[] =
        1,     1,     1,     1,     1,     1,     1,     1,     1,     2,
        2,     3,     2,     3,     2,     1,     1,     1,     1,     2,
        2,     3,     2,     3,     2,     2,     3,     2,     3,     2,
-       1,     1,     1,     2,     2,     2,     2,     3,     2,     2,
+       1,     1,     1,     2,     2,     4,     2,     3,     2,     3,
        2,     1
 };
 
@@ -1540,36 +1540,37 @@ yyreduce:
 #line 1541 "parser.tab.c"
     break;
 
-  case 45: /* arrive_stmt: TOK_ARRIVE TOK_IDENTIFIER  */
+  case 45: /* distance_stmt: TOK_DISTANCE TOK_IDENTIFIER TOK_IDENTIFIER TOK_INTEGER  */
 #line 392 "parser.y"
         {
             int ln = yylineno_val;
             char pt[256];
             snprintf(pt, sizeof(pt),
-                "{\"stmt\":\"ARRIVE\",\"ambulance\":\"%s\",\"line\":%d}", (yyvsp[0].str_val), ln);
+                "{\"stmt\":\"DISTANCE\",\"ambulance\":\"%s\",\"patient\":\"%s\",\"distance\":%d,\"line\":%d}", 
+                (yyvsp[-2].str_val), (yyvsp[-1].str_val), (yyvsp[0].int_val), ln);
             if (g_pt_pos > 0) pt_append(",");
             pt_append(pt);
 
-            if (sem_check_arrive(g_symtable, (yyvsp[0].str_val), ln) == SEM_OK)
-                ir_emit_arrive(g_ir, (yyvsp[0].str_val), ln);
+            if (sem_check_distance(g_symtable, (yyvsp[-2].str_val), (yyvsp[-1].str_val), (yyvsp[0].int_val), ln) == SEM_OK)
+                ir_emit_distance(g_ir, (yyvsp[-2].str_val), (yyvsp[-1].str_val), (yyvsp[0].int_val), ln);
 
             g_stmt_count++;
-            free((yyvsp[0].str_val));
+            free((yyvsp[-2].str_val)); free((yyvsp[-1].str_val));
         }
-#line 1560 "parser.tab.c"
+#line 1561 "parser.tab.c"
     break;
 
-  case 46: /* arrive_stmt: TOK_ARRIVE error  */
-#line 407 "parser.y"
+  case 46: /* distance_stmt: TOK_DISTANCE error  */
+#line 408 "parser.y"
         {
-            yyerror("Invalid ARRIVE statement. Expected: ARRIVE <ambulance_id>");
+            yyerror("Invalid DISTANCE statement. Expected: DISTANCE <ambulance_id> <patient_id> <distance>");
             yyerrok;
         }
-#line 1569 "parser.tab.c"
+#line 1570 "parser.tab.c"
     break;
 
   case 47: /* transfer_stmt: TOK_TRANSFER TOK_IDENTIFIER TOK_IDENTIFIER  */
-#line 418 "parser.y"
+#line 419 "parser.y"
         {
             int ln = yylineno_val;
             char pt[256];
@@ -1585,48 +1586,49 @@ yyreduce:
             g_stmt_count++;
             free((yyvsp[-1].str_val)); free((yyvsp[0].str_val));
         }
-#line 1589 "parser.tab.c"
+#line 1590 "parser.tab.c"
     break;
 
   case 48: /* transfer_stmt: TOK_TRANSFER error  */
-#line 434 "parser.y"
+#line 435 "parser.y"
         {
             yyerror("Invalid TRANSFER statement. Expected: TRANSFER <patient_id> <hospital_id>");
             yyerrok;
         }
-#line 1598 "parser.tab.c"
+#line 1599 "parser.tab.c"
     break;
 
-  case 49: /* cancel_stmt: TOK_CANCEL TOK_IDENTIFIER  */
-#line 445 "parser.y"
+  case 49: /* speed_stmt: TOK_SPEED TOK_IDENTIFIER TOK_INTEGER  */
+#line 446 "parser.y"
         {
             int ln = yylineno_val;
             char pt[256];
             snprintf(pt, sizeof(pt),
-                "{\"stmt\":\"CANCEL\",\"ambulance\":\"%s\",\"line\":%d}", (yyvsp[0].str_val), ln);
+                "{\"stmt\":\"SPEED\",\"ambulance\":\"%s\",\"speed\":%d,\"line\":%d}", 
+                (yyvsp[-1].str_val), (yyvsp[0].int_val), ln);
             if (g_pt_pos > 0) pt_append(",");
             pt_append(pt);
 
-            if (sem_check_cancel(g_symtable, (yyvsp[0].str_val), ln) == SEM_OK)
-                ir_emit_cancel(g_ir, (yyvsp[0].str_val), ln);
+            if (sem_check_speed(g_symtable, (yyvsp[-1].str_val), (yyvsp[0].int_val), ln) == SEM_OK)
+                ir_emit_speed(g_ir, (yyvsp[-1].str_val), (yyvsp[0].int_val), ln);
 
             g_stmt_count++;
-            free((yyvsp[0].str_val));
+            free((yyvsp[-1].str_val));
         }
-#line 1617 "parser.tab.c"
+#line 1619 "parser.tab.c"
     break;
 
-  case 50: /* cancel_stmt: TOK_CANCEL error  */
-#line 460 "parser.y"
+  case 50: /* speed_stmt: TOK_SPEED error  */
+#line 462 "parser.y"
         {
-            yyerror("Invalid CANCEL statement. Expected: CANCEL <ambulance_id>");
+            yyerror("Invalid SPEED statement. Expected: SPEED <ambulance_id> <speed>");
             yyerrok;
         }
-#line 1626 "parser.tab.c"
+#line 1628 "parser.tab.c"
     break;
 
   case 51: /* report_stmt: TOK_REPORT  */
-#line 471 "parser.y"
+#line 473 "parser.y"
         {
             int ln = yylineno_val;
             char pt[128];
@@ -1638,11 +1640,11 @@ yyreduce:
             ir_emit_report(g_ir, ln);
             g_stmt_count++;
         }
-#line 1642 "parser.tab.c"
+#line 1644 "parser.tab.c"
     break;
 
 
-#line 1646 "parser.tab.c"
+#line 1648 "parser.tab.c"
 
       default: break;
     }
@@ -1835,5 +1837,5 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 484 "parser.y"
+#line 486 "parser.y"
 

@@ -46,6 +46,11 @@ void symtable_reset(SymbolTable *st) {
         while (h) { HospitalEntry *nx = h->next; free(h); h = nx; }
         st->hospitals[i] = NULL;
     }
+    
+    DistanceEntry *d = st->distances;
+    while (d) { DistanceEntry *nx = d->next; free(d); d = nx; }
+    st->distances = NULL;
+
     st->patient_count   = 0;
     st->ambulance_count = 0;
     st->hospital_count  = 0;
@@ -110,6 +115,7 @@ int symtable_add_ambulance(SymbolTable *st, const char *id, int line) {
     strncpy(entry->id, id, MAX_ID_LEN - 1);
     entry->state         = AMB_AVAILABLE;
     entry->priority      = PRI_UNKNOWN;
+    entry->speed         = 0;
     entry->line_declared = line;
     entry->next          = st->ambulances[idx];
     st->ambulances[idx]  = entry;
@@ -164,6 +170,44 @@ HospitalEntry* symtable_get_hospital(SymbolTable *st, const char *id) {
 }
 
 /* ============================================================
+ * SPEED & DISTANCE OPERATIONS
+ * ============================================================ */
+void symtable_set_speed(SymbolTable *st, const char *id, int speed) {
+    AmbulanceEntry *amb = symtable_get_ambulance(st, id);
+    if (amb) amb->speed = speed;
+}
+
+void symtable_set_distance(SymbolTable *st, const char *amb_id, const char *pat_id, int distance) {
+    if (!st || !amb_id || !pat_id) return;
+    DistanceEntry *cur = st->distances;
+    while (cur) {
+        if (strcmp(cur->ambulance_id, amb_id) == 0 && strcmp(cur->patient_id, pat_id) == 0) {
+            cur->distance = distance;
+            return;
+        }
+        cur = cur->next;
+    }
+    DistanceEntry *new_d = (DistanceEntry*)calloc(1, sizeof(DistanceEntry));
+    strncpy(new_d->ambulance_id, amb_id, MAX_ID_LEN - 1);
+    strncpy(new_d->patient_id, pat_id, MAX_ID_LEN - 1);
+    new_d->distance = distance;
+    new_d->next = st->distances;
+    st->distances = new_d;
+}
+
+int symtable_get_distance(SymbolTable *st, const char *amb_id, const char *pat_id) {
+    if (!st || !amb_id || !pat_id) return -1;
+    DistanceEntry *cur = st->distances;
+    while (cur) {
+        if (strcmp(cur->ambulance_id, amb_id) == 0 && strcmp(cur->patient_id, pat_id) == 0) {
+            return cur->distance;
+        }
+        cur = cur->next;
+    }
+    return -1;
+}
+
+/* ============================================================
  * JSON DUMP
  * ============================================================ */
 void symtable_dump_json(SymbolTable *st, FILE *out) {
@@ -202,12 +246,13 @@ void symtable_dump_json(SymbolTable *st, FILE *out) {
             if (!first_a) fprintf(out, ",\n");
             fprintf(out,
                 "    {\"id\":\"%s\",\"state\":\"%s\",\"patient\":\"%s\","
-                "\"hospital\":\"%s\",\"priority\":\"%s\"}",
+                "\"hospital\":\"%s\",\"priority\":\"%s\",\"speed\":%d}",
                 a->id,
                 ambulance_state_to_str(a->state),
                 a->assigned_patient,
                 a->route_hospital,
-                priority_to_str(a->priority));
+                priority_to_str(a->priority),
+                a->speed);
             first_a = 0;
             a = a->next;
         }

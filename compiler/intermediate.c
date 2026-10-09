@@ -104,9 +104,11 @@ void ir_emit_status(IRProgram *p, const char *aid, int line) {
     strncpy(i->arg1, aid, 63);
 }
 
-void ir_emit_arrive(IRProgram *p, const char *aid, int line) {
-    IRInstruction *i = _new_instr(p, OP_ARRIVE, line);
+void ir_emit_distance(IRProgram *p, const char *aid, const char *pid, int dist, int line) {
+    IRInstruction *i = _new_instr(p, OP_DISTANCE, line);
     strncpy(i->arg1, aid, 63);
+    strncpy(i->arg2, pid, 63);
+    snprintf(i->arg3, sizeof(i->arg3), "%d", dist);
 }
 
 void ir_emit_transfer(IRProgram *p, const char *pid, const char *hid, int line) {
@@ -115,9 +117,10 @@ void ir_emit_transfer(IRProgram *p, const char *pid, const char *hid, int line) 
     strncpy(i->arg2, hid, 63);
 }
 
-void ir_emit_cancel(IRProgram *p, const char *aid, int line) {
-    IRInstruction *i = _new_instr(p, OP_CANCEL, line);
+void ir_emit_speed(IRProgram *p, const char *aid, int speed, int line) {
+    IRInstruction *i = _new_instr(p, OP_SPEED, line);
     strncpy(i->arg1, aid, 63);
+    snprintf(i->arg2, sizeof(i->arg2), "%d", speed);
 }
 
 void ir_emit_report(IRProgram *p, int line) {

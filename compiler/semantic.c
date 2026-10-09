@@ -186,6 +186,20 @@ int sem_check_dispatch(SymbolTable *st, const char *aid, const char *pid, int li
         return SEM_ERROR;
     }
 
+    int dist = symtable_get_distance(st, aid, pid);
+    if (dist < 0) {
+        char msg[512];
+        snprintf(msg, sizeof(msg), "Distance not set for Ambulance %s and Patient %s.", aid, pid);
+        _add_error(ERR_SEMANTIC, line, msg, "Declared DISTANCE", "Missing distance");
+        return SEM_ERROR;
+    }
+    if (amb->speed <= 0) {
+        char msg[512];
+        snprintf(msg, sizeof(msg), "Speed not set for Ambulance %s.", aid);
+        _add_error(ERR_SEMANTIC, line, msg, "Declared SPEED", "Missing speed");
+        return SEM_ERROR;
+    }
+
     /* Apply state transitions */
     amb->state = AMB_DISPATCHED;
     strncpy(amb->assigned_patient, pid, MAX_ID_LEN - 1);
@@ -277,9 +291,9 @@ int sem_check_status(SymbolTable *st, const char *aid, int line) {
 }
 
 /* ============================================================
- * ARRIVE
+ * DISTANCE
  * ============================================================ */
-int sem_check_arrive(SymbolTable *st, const char *aid, int line) {
+int sem_check_distance(SymbolTable *st, const char *aid, const char *pid, int dist, int line) {
     AmbulanceEntry *amb = symtable_get_ambulance(st, aid);
     if (!amb) {
         char msg[512];
@@ -287,22 +301,21 @@ int sem_check_arrive(SymbolTable *st, const char *aid, int line) {
         _add_error(ERR_SEMANTIC, line, msg, "Registered ambulance identifier", aid);
         return SEM_ERROR;
     }
-
-    if (amb->state != AMB_DISPATCHED) {
+    PatientEntry *pat = symtable_get_patient(st, pid);
+    if (!pat) {
         char msg[512];
-        snprintf(msg, sizeof(msg),
-                 "Ambulance %s cannot arrive. It has not been dispatched. Current state: %s",
-                 aid, ambulance_state_to_str(amb->state));
-        _add_error(ERR_SEMANTIC, line, msg, "DISPATCHED", ambulance_state_to_str(amb->state));
+        snprintf(msg, sizeof(msg), "Patient %s has not been registered.", pid);
+        _add_error(ERR_SEMANTIC, line, msg, "Registered patient identifier", pid);
         return SEM_ERROR;
     }
-
-    amb->state = AMB_ARRIVED;
-    /* Patient goes IN_TRANSIT */
-    if (strlen(amb->assigned_patient) > 0) {
-        PatientEntry *pat = symtable_get_patient(st, amb->assigned_patient);
-        if (pat) pat->state = PATIENT_IN_TRANSIT;
+    if (dist < 0) {
+        char msg[512];
+        snprintf(msg, sizeof(msg), "Distance between %s and %s cannot be negative.", aid, pid);
+        _add_error(ERR_SEMANTIC, line, msg, "Non-negative distance", "Negative value");
+        return SEM_ERROR;
     }
+    
+    symtable_set_distance(st, aid, pid, dist);
     return SEM_OK;
 }
 
@@ -326,13 +339,13 @@ int sem_check_transfer(SymbolTable *st, const char *pid, const char *hid, int li
         return SEM_ERROR;
     }
 
-    if (pat->state != PATIENT_IN_TRANSIT) {
+    if (pat->state != PATIENT_ASSIGNED && pat->state != PATIENT_IN_TRANSIT) {
         char msg[512];
         snprintf(msg, sizeof(msg),
-                 "Patient %s cannot be transferred. Ambulance has not arrived yet. "
+                 "Patient %s cannot be transferred. Patient is not assigned an ambulance. "
                  "Current patient state: %s",
                  pid, patient_state_to_str(pat->state));
-        _add_error(ERR_SEMANTIC, line, msg, "IN_TRANSIT", patient_state_to_str(pat->state));
+        _add_error(ERR_SEMANTIC, line, msg, "ASSIGNED or IN_TRANSIT", patient_state_to_str(pat->state));
         return SEM_ERROR;
     }
 
@@ -349,9 +362,9 @@ int sem_check_transfer(SymbolTable *st, const char *pid, const char *hid, int li
 }
 
 /* ============================================================
- * CANCEL
+ * SPEED
  * ============================================================ */
-int sem_check_cancel(SymbolTable *st, const char *aid, int line) {
+int sem_check_speed(SymbolTable *st, const char *aid, int speed, int line) {
     AmbulanceEntry *amb = symtable_get_ambulance(st, aid);
     if (!amb) {
         char msg[512];
@@ -360,26 +373,14 @@ int sem_check_cancel(SymbolTable *st, const char *aid, int line) {
         return SEM_ERROR;
     }
 
-    if (amb->state == AMB_COMPLETED || amb->state == AMB_CANCELLED) {
+    if (speed <= 0) {
         char msg[512];
-        snprintf(msg, sizeof(msg),
-                 "Ambulance %s cannot be cancelled. Current state: %s",
-                 aid, ambulance_state_to_str(amb->state));
-        _add_error(ERR_SEMANTIC, line, msg, "AVAILABLE or DISPATCHED",
-                   ambulance_state_to_str(amb->state));
+        snprintf(msg, sizeof(msg), "Speed for ambulance %s must be greater than zero.", aid);
+        _add_error(ERR_SEMANTIC, line, msg, "Positive speed", "Zero or negative value");
         return SEM_ERROR;
     }
-
-    /* Reset patient if assigned */
-    if (strlen(amb->assigned_patient) > 0) {
-        PatientEntry *pat = symtable_get_patient(st, amb->assigned_patient);
-        if (pat && (pat->state == PATIENT_ASSIGNED || pat->state == PATIENT_IN_TRANSIT)) {
-            pat->state = PATIENT_WAITING;
-            memset(pat->assigned_ambulance, 0, MAX_ID_LEN);
-        }
-    }
-    amb->state = AMB_CANCELLED;
-    memset(amb->assigned_patient, 0, MAX_ID_LEN);
+    
+    symtable_set_speed(st, aid, speed);
     return SEM_OK;
 }
 

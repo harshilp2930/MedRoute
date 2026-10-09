@@ -79,9 +79,9 @@ typedef enum {
     OP_ASSIGN_ROUTE,
     OP_SET_PRIORITY,
     OP_STATUS,
-    OP_ARRIVE,
+    OP_DISTANCE,
     OP_TRANSFER,
-    OP_CANCEL,
+    OP_SPEED,
     OP_REPORT
 } OpCode;
 
@@ -172,9 +172,9 @@ static const char* opcode_to_str(OpCode op) {
         case OP_ASSIGN_ROUTE:       return "ASSIGN_ROUTE";
         case OP_SET_PRIORITY:       return "SET_PRIORITY";
         case OP_STATUS:             return "STATUS";
-        case OP_ARRIVE:             return "ARRIVE";
+        case OP_DISTANCE:           return "DISTANCE";
         case OP_TRANSFER:           return "TRANSFER";
-        case OP_CANCEL:             return "CANCEL";
+        case OP_SPEED:              return "SPEED";
         case OP_REPORT:             return "REPORT";
         default:                    return "UNKNOWN_OP";
     }

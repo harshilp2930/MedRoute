@@ -17,8 +17,16 @@ SEVERITY P103 MEDIUM
 
 // Register ambulances
 AMBULANCE A12
+DISTANCE A12 P101 5
+SPEED A12 30
+
 AMBULANCE A13
+DISTANCE A13 P102 3
+SPEED A13 30
+
 AMBULANCE A14
+DISTANCE A14 P103 8
+SPEED A14 40
 
 // Register hospitals
 HOSPITAL H01 "City Hospital"
@@ -44,10 +52,7 @@ STATUS A12
 STATUS A13
 STATUS A14
 
-// Ambulances arrive at patient locations
-ARRIVE A12
-ARRIVE A13
-ARRIVE A14
+// Ambulances proceed directly to dispatch -> transfer state
 
 // Transfer patients to hospitals
 TRANSFER P101 H01

@@ -20,17 +20,21 @@ DISPATCH A99 P101
 AMBULANCE A12
 HOSPITAL H01 "General Hospital"
 
+// ERROR 3: Dispatch missing distance and speed
+DISPATCH A12 P101
+
+// Set distance and speed correctly
+DISTANCE A12 P101 5
+SPEED A12 30
+
 // Dispatch OK
 DISPATCH A12 P101
 
-// ERROR 3: Dispatch again — ambulance A12 already DISPATCHED
+// ERROR 4: Dispatch again — ambulance A12 already DISPATCHED
 DISPATCH A12 P101
 
-// ERROR 4: ARRIVE before dispatch on a different (nonexistent) ambulance
-ARRIVE A50
-
-// ERROR 5: TRANSFER before ambulance has arrived (A12 is still DISPATCHED, not ARRIVED)
-TRANSFER P101 H01
+// ERROR 5: Negative distance
+DISTANCE A12 P101 -5
 
 // ERROR 6: Invalid severity value
 PATIENT P102

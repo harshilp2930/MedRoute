@@ -18,12 +18,14 @@ SEVERITY P101 CRITICAL
 AMBULANCE A12
 HOSPITAL H01 "City Hospital"
 
+DISTANCE A12 P101 5
+SPEED A12 30
+
 DISPATCH A12 P101
 ROUTE A12 H01
 PRIORITY A12 HIGH
 
 STATUS A12
-ARRIVE A12
 TRANSFER P101 H01
 REPORT
 ```
@@ -46,7 +48,7 @@ The project is built with a clear separation of concerns, divided into two main 
 
 ## 🚀 Features
 
-*   **Custom Language**: A complete DSL with custom keywords (`PATIENT`, `LOCATION`, `SEVERITY`, `AMBULANCE`, `HOSPITAL`, `DISPATCH`, `ROUTE`, `PRIORITY`, `STATUS`, `ARRIVE`, `TRANSFER`, `CANCEL`, `REPORT`).
+*   **Custom Language**: A complete DSL with custom keywords (`PATIENT`, `LOCATION`, `SEVERITY`, `AMBULANCE`, `HOSPITAL`, `DISPATCH`, `ROUTE`, `PRIORITY`, `STATUS`, `DISTANCE`, `TRANSFER`, `SPEED`, `REPORT`).
 *   **Real Lexer & Parser**: Built using industry-standard tools (Flex and Bison).
 *   **Strict Semantic Validation**: Prevents logically invalid operations (e.g., dispatching an ambulance that doesn't exist, arriving before dispatching).
 *   **Symbol Table Management**: Tracks the state and attributes of Patients, Ambulances, and Hospitals.

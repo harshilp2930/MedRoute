@@ -12,8 +12,8 @@ export function registerMedRouteLanguage(monaco: typeof Monaco) {
   monaco.languages.setMonarchTokensProvider('medroute', {
     keywords: [
       'PATIENT', 'LOCATION', 'SEVERITY', 'AMBULANCE', 'HOSPITAL',
-      'DISPATCH', 'ROUTE', 'PRIORITY', 'STATUS', 'ARRIVE',
-      'TRANSFER', 'CANCEL', 'REGISTER', 'AVAILABLE', 'ASSIGN', 'REPORT'
+      'DISPATCH', 'ROUTE', 'PRIORITY', 'STATUS', 'DISTANCE',
+      'TRANSFER', 'SPEED', 'REGISTER', 'AVAILABLE', 'ASSIGN', 'REPORT'
     ],
     severityTokens: ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
 
@@ -26,7 +26,7 @@ export function registerMedRouteLanguage(monaco: typeof Monaco) {
         [/"([^"\\]|\\.)*"/, 'string'],
 
         // Keywords (must come before identifier rule)
-        [/\b(PATIENT|LOCATION|SEVERITY|AMBULANCE|HOSPITAL|DISPATCH|ROUTE|PRIORITY|STATUS|ARRIVE|TRANSFER|CANCEL|REGISTER|AVAILABLE|ASSIGN|REPORT)\b/, 'keyword'],
+        [/\b(PATIENT|LOCATION|SEVERITY|AMBULANCE|HOSPITAL|DISPATCH|ROUTE|PRIORITY|STATUS|DISTANCE|TRANSFER|SPEED|REGISTER|AVAILABLE|ASSIGN|REPORT)\b/, 'keyword'],
 
         // Severity/Priority values
         [/\b(LOW|MEDIUM|HIGH|CRITICAL)\b/, 'type.identifier'],
@@ -145,11 +145,11 @@ export function registerMedRouteLanguage(monaco: typeof Monaco) {
           range,
         },
         {
-          label: 'ARRIVE',
+          label: 'DISTANCE',
           kind: monaco.languages.CompletionItemKind.Keyword,
-          insertText: 'ARRIVE ${1:A12}',
+          insertText: 'DISTANCE ${1:A12} ${2:P101} ${3:5}',
           insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-          documentation: 'Mark ambulance arrival. ARRIVE <ambulance_id>',
+          documentation: 'Set distance. DISTANCE <ambulance_id> <patient_id> <distance>',
           range,
         },
         {
@@ -161,11 +161,11 @@ export function registerMedRouteLanguage(monaco: typeof Monaco) {
           range,
         },
         {
-          label: 'CANCEL',
+          label: 'SPEED',
           kind: monaco.languages.CompletionItemKind.Keyword,
-          insertText: 'CANCEL ${1:A12}',
+          insertText: 'SPEED ${1:A12} ${2:30}',
           insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-          documentation: 'Cancel ambulance dispatch. CANCEL <ambulance_id>',
+          documentation: 'Set speed. SPEED <ambulance_id> <speed>',
           range,
         },
         {

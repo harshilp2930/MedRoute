@@ -11,6 +11,8 @@ SEVERITY P101 CRITICAL
 
 // Register resources
 AMBULANCE A12
+DISTANCE A12 P101 5
+SPEED A12 30
 HOSPITAL H01 "City Hospital"
 
 // Dispatch and route
@@ -21,8 +23,7 @@ PRIORITY A12 HIGH
 // Check current status
 STATUS A12
 
-// Simulate arrival and patient handover
-ARRIVE A12
+// Simulate patient handover
 TRANSFER P101 H01
 
 // Print final system state

@@ -31,9 +31,9 @@ int sem_check_dispatch     (SymbolTable *st, const char *aid, const char *pid, i
 int sem_check_route        (SymbolTable *st, const char *aid, const char *hid, int line);
 int sem_check_priority     (SymbolTable *st, const char *aid, const char *pri_str, int line, Priority *out_pri);
 int sem_check_status       (SymbolTable *st, const char *aid, int line);
-int sem_check_arrive       (SymbolTable *st, const char *aid, int line);
+int sem_check_distance     (SymbolTable *st, const char *aid, const char *pid, int dist, int line);
 int sem_check_transfer     (SymbolTable *st, const char *pid, const char *hid, int line);
-int sem_check_cancel       (SymbolTable *st, const char *aid, int line);
+int sem_check_speed        (SymbolTable *st, const char *aid, int speed, int line);
 int sem_check_report       (int line);
 
 /* Error output */

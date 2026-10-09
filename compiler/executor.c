@@ -62,10 +62,15 @@ static void exec_dispatch(IRInstruction *cur, SymbolTable *st, ExecutionResult *
     AmbulanceEntry *amb = symtable_get_ambulance(st, cur->arg1);
     PatientEntry   *pat = symtable_get_patient(st, cur->arg2);
     if (amb && pat) {
+        int dist = symtable_get_distance(st, cur->arg1, cur->arg2);
+        int speed = amb->speed;
+        int eta = 0;
+        if (speed > 0) {
+            eta = (int)(((float)dist / (float)speed) * 60.0f);
+        }
         snprintf(msg, sizeof(msg),
-                 "Ambulance %s dispatched to patient %s. "
-                 "Ambulance: AVAILABLE → DISPATCHED. Patient: REGISTERED → ASSIGNED.",
-                 cur->arg1, cur->arg2);
+                 "Patient: %s Ambulance: %s Distance: %d km Speed: %d km/h Estimated Arrival Time: %d minutes Dispatch Status: DISPATCHED",
+                 cur->arg2, cur->arg1, dist, speed, eta);
         _log(res, idx, 1, msg);
     } else {
         snprintf(msg, sizeof(msg), "Dispatch failed for %s → %s.", cur->arg1, cur->arg2);
@@ -113,19 +118,10 @@ static void exec_status(IRInstruction *cur, SymbolTable *st, ExecutionResult *re
     }
 }
 
-static void exec_arrive(IRInstruction *cur, SymbolTable *st, ExecutionResult *res, int idx) {
+static void exec_distance(IRInstruction *cur, ExecutionResult *res, int idx) {
     char msg[512];
-    AmbulanceEntry *amb = symtable_get_ambulance(st, cur->arg1);
-    if (amb) {
-        snprintf(msg, sizeof(msg),
-                 "Ambulance %s arrived. State: DISPATCHED → ARRIVED. "
-                 "Patient state: ASSIGNED → IN_TRANSIT.",
-                 cur->arg1);
-        _log(res, idx, 1, msg);
-    } else {
-        snprintf(msg, sizeof(msg), "ARRIVE failed for ambulance %s.", cur->arg1);
-        _log(res, idx, 0, msg);
-    }
+    snprintf(msg, sizeof(msg), "Distance between %s and %s set to %s km.", cur->arg1, cur->arg2, cur->arg3);
+    _log(res, idx, 1, msg);
 }
 
 static void exec_transfer(IRInstruction *cur, SymbolTable *st, ExecutionResult *res, int idx) {
@@ -135,7 +131,7 @@ static void exec_transfer(IRInstruction *cur, SymbolTable *st, ExecutionResult *
     if (pat && hosp) {
         snprintf(msg, sizeof(msg),
                  "Patient %s transferred to %s (%s). "
-                 "Patient: IN_TRANSIT → TRANSFERRED. Ambulance: ARRIVED → COMPLETED.",
+                 "Patient: ASSIGNED → TRANSFERRED. Ambulance: DISPATCHED → COMPLETED.",
                  cur->arg1, cur->arg2, hosp->name);
         _log(res, idx, 1, msg);
     } else {
@@ -144,16 +140,10 @@ static void exec_transfer(IRInstruction *cur, SymbolTable *st, ExecutionResult *
     }
 }
 
-static void exec_cancel(IRInstruction *cur, SymbolTable *st, ExecutionResult *res, int idx) {
+static void exec_speed(IRInstruction *cur, ExecutionResult *res, int idx) {
     char msg[512];
-    AmbulanceEntry *amb = symtable_get_ambulance(st, cur->arg1);
-    if (amb) {
-        snprintf(msg, sizeof(msg), "Ambulance %s dispatch cancelled. State → CANCELLED.", cur->arg1);
-        _log(res, idx, 1, msg);
-    } else {
-        snprintf(msg, sizeof(msg), "CANCEL failed for ambulance %s.", cur->arg1);
-        _log(res, idx, 0, msg);
-    }
+    snprintf(msg, sizeof(msg), "Speed of %s set to %s km/h.", cur->arg1, cur->arg2);
+    _log(res, idx, 1, msg);
 }
 
 static void exec_report(SymbolTable *st, ExecutionResult *res, int idx) {
@@ -190,9 +180,9 @@ ExecutionResult* executor_run(IRProgram *prog, SymbolTable *st) {
             case OP_ASSIGN_ROUTE:       exec_assign_route(cur, st, res, idx); break;
             case OP_SET_PRIORITY:       exec_set_priority(cur, res, idx); break;
             case OP_STATUS:             exec_status(cur, st, res, idx); break;
-            case OP_ARRIVE:             exec_arrive(cur, st, res, idx); break;
+            case OP_DISTANCE:           exec_distance(cur, res, idx); break;
             case OP_TRANSFER:           exec_transfer(cur, st, res, idx); break;
-            case OP_CANCEL:             exec_cancel(cur, st, res, idx); break;
+            case OP_SPEED:              exec_speed(cur, res, idx); break;
             case OP_REPORT:             exec_report(st, res, idx); break;
             default: {
                 char msg[512];

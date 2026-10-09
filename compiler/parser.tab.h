@@ -63,9 +63,9 @@ extern int yydebug;
     TOK_ROUTE = 264,               /* TOK_ROUTE  */
     TOK_PRIORITY = 265,            /* TOK_PRIORITY  */
     TOK_STATUS = 266,              /* TOK_STATUS  */
-    TOK_ARRIVE = 267,              /* TOK_ARRIVE  */
+    TOK_DISTANCE = 267,            /* TOK_DISTANCE  */
     TOK_TRANSFER = 268,            /* TOK_TRANSFER  */
-    TOK_CANCEL = 269,              /* TOK_CANCEL  */
+    TOK_SPEED = 269,               /* TOK_SPEED  */
     TOK_REGISTER = 270,            /* TOK_REGISTER  */
     TOK_AVAILABLE = 271,           /* TOK_AVAILABLE  */
     TOK_ASSIGN = 272,              /* TOK_ASSIGN  */
