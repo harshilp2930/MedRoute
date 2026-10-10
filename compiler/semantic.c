@@ -205,6 +205,16 @@ int sem_check_dispatch(SymbolTable *st, const char *aid, const char *pid, int li
     strncpy(amb->assigned_patient, pid, MAX_ID_LEN - 1);
     pat->state = PATIENT_ASSIGNED;
     strncpy(pat->assigned_ambulance, aid, MAX_ID_LEN - 1);
+
+    /* Automatically assign priority based on patient condition (severity) */
+    if (pat->severity == SEV_CRITICAL || pat->severity == SEV_HIGH) {
+        amb->priority = PRI_HIGH;
+    } else if (pat->severity == SEV_MEDIUM) {
+        amb->priority = PRI_MEDIUM;
+    } else if (pat->severity == SEV_LOW) {
+        amb->priority = PRI_LOW;
+    }
+
     return SEM_OK;
 }
 
