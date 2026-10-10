@@ -69,11 +69,18 @@ static void exec_dispatch(IRInstruction *cur, SymbolTable *st, ExecutionResult *
             eta = (int)(((float)dist / (float)speed) * 60.0f);
         }
         snprintf(msg, sizeof(msg),
-                 "Patient: %s Ambulance: %s Distance: %d km Speed: %d km/h Estimated Arrival Time: %d minutes Dispatch Status: DISPATCHED",
+                 "\n----------------------------------------\n"
+                 "[DISPATCH SUCCESS]\n"
+                 " Patient:    %s\n"
+                 " Ambulance:  %s\n"
+                 " Distance:   %d km\n"
+                 " Speed:      %d km/h\n"
+                 " ETA:        %d minutes\n"
+                 "----------------------------------------",
                  cur->arg2, cur->arg1, dist, speed, eta);
         _log(res, idx, 1, msg);
     } else {
-        snprintf(msg, sizeof(msg), "Dispatch failed for %s → %s.", cur->arg1, cur->arg2);
+        snprintf(msg, sizeof(msg), "\n[DISPATCH FAILED] %s -> %s", cur->arg1, cur->arg2);
         _log(res, idx, 0, msg);
     }
 }
@@ -84,12 +91,12 @@ static void exec_assign_route(IRInstruction *cur, SymbolTable *st, ExecutionResu
     HospitalEntry  *hosp = symtable_get_hospital(st, cur->arg2);
     if (amb && hosp) {
         snprintf(msg, sizeof(msg),
-                 "Route assigned: Ambulance %s → Hospital %s (%s).",
+                 "[ROUTE ASSIGNED] Ambulance %s -> Hospital %s (%s)",
                  cur->arg1, cur->arg2, hosp->name);
         _log(res, idx, 1, msg);
     } else {
         snprintf(msg, sizeof(msg),
-                 "Route assignment failed: %s → %s.", cur->arg1, cur->arg2);
+                 "[ROUTE FAILED] %s -> %s", cur->arg1, cur->arg2);
         _log(res, idx, 0, msg);
     }
 }
@@ -105,7 +112,7 @@ static void exec_status(IRInstruction *cur, SymbolTable *st, ExecutionResult *re
     AmbulanceEntry *amb = symtable_get_ambulance(st, cur->arg1);
     if (amb) {
         snprintf(msg, sizeof(msg),
-                 "STATUS %s → State: %s | Patient: %s | Hospital: %s | Priority: %s",
+                 "STATUS %s -> State: %s | Patient: %s | Hospital: %s | Priority: %s",
                  cur->arg1,
                  ambulance_state_to_str(amb->state),
                  strlen(amb->assigned_patient) ? amb->assigned_patient : "NONE",
@@ -131,11 +138,11 @@ static void exec_transfer(IRInstruction *cur, SymbolTable *st, ExecutionResult *
     if (pat && hosp) {
         snprintf(msg, sizeof(msg),
                  "Patient %s transferred to %s (%s). "
-                 "Patient: ASSIGNED → TRANSFERRED. Ambulance: DISPATCHED → COMPLETED.",
+                 "Patient: ASSIGNED -> TRANSFERRED. Ambulance: DISPATCHED -> COMPLETED.",
                  cur->arg1, cur->arg2, hosp->name);
         _log(res, idx, 1, msg);
     } else {
-        snprintf(msg, sizeof(msg), "TRANSFER failed: %s → %s.", cur->arg1, cur->arg2);
+        snprintf(msg, sizeof(msg), "TRANSFER failed: %s -> %s.", cur->arg1, cur->arg2);
         _log(res, idx, 0, msg);
     }
 }
@@ -149,7 +156,9 @@ static void exec_speed(IRInstruction *cur, ExecutionResult *res, int idx) {
 static void exec_report(SymbolTable *st, ExecutionResult *res, int idx) {
     char msg[512];
     snprintf(msg, sizeof(msg),
-             "REPORT generated: %d patient(s), %d ambulance(s), %d hospital(s).",
+             "\n========================================\n"
+             "REPORT GENERATED: %d patient(s), %d ambulance(s), %d hospital(s).\n"
+             "========================================",
              st->patient_count, st->ambulance_count, st->hospital_count);
     _log(res, idx, 1, msg);
 }
