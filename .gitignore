@@ -1,2 +1,14 @@
 compiler/Presentation_Files/
 docs/presentation_script.md
+
+# Build logs and temp files
+*.log
+*.tmp
+compiler/*.log
+compiler/*.txt
+compiler/test.*
+
+# Node modules / caches (if any)
+node_modules/
+.DS_Store
+Thumbs.db

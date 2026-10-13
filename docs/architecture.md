@@ -1,29 +1,90 @@
-# MedRoute Architecture
+# MedRoute Compiler Architecture
 
-## High-Level Architecture
+## Overview
 
-The MedRoute project is a modern compiler infrastructure that bridges traditional systems programming with a rich web-based frontend.
+The MedRoute compiler is a multi-phase domain-specific language compiler implemented in **C**, utilizing **Flex** for lexical analysis and **Bison** for syntax parsing.
 
-### 1. The Compiler Core (Backend/System)
-Written in C and C++, the compiler performs the heavy lifting.
-*   **Lexical Analyzer (`lexer.l`)**: Uses Flex to read the `.med` source files and convert character streams into a sequence of tokens.
-*   **Syntax Analyzer (`parser.y`)**: Uses Bison to ensure the tokens form valid statements according to the MedRoute grammar, generating an Abstract Syntax Tree (AST).
-*   **Symbol Table (`symbol_table.c/h`)**: A specialized data structure tracking all declared entities (Patients, Hospitals, Ambulances) and their real-time states (e.g., coordinates, availability, severity).
-*   **Semantic Analyzer (`semantic.c/h`)**: Enforces business logic. For example, it ensures you cannot dispatch an ambulance to a hospital without it first picking up a patient.
-*   **Intermediate Representation (`intermediate.c/h`)**: Converts the validated AST into a linear sequence of execution instructions (IR).
-*   **Execution Engine (`executor.c/h`)**: Iterates over the IR to simulate the dispatch scenario, updating state and producing the final report.
+The architecture follows classical compiler construction principles, separated into distinct modular subsystems:
 
-### 2. The IDE Frontend (Web/UI)
-Built with React and TypeScript, providing an interactive environment to write and debug MedRoute programs.
-*   **Editor**: Integrated Monaco Editor (the core of VS Code) with custom syntax highlighting for MedRoute.
-*   **Pipeline Visualizer**: Panels that dynamically display the output of each compiler phase (Tokens, Parse Tree, Symbol Table, IR) in real-time as the user types.
-*   **Simulation Map**: A graphical interface that animates the execution engine's output, showing ambulances moving to patients and hospitals.
+```
+Source Code (.med)
+      │
+      ▼
+┌──────────────┐
+│   lexer.l    │  (Lexical Analysis - Flex)
+└──────┬───────┘
+       │ Tokens
+       ▼
+┌──────────────┐
+│   parser.y   │  (Syntax Analysis - Bison)
+└──────┬───────┘
+       │ Parse Tree & AST
+       ▼
+┌──────────────┐
+│  semantic.c  │  (Semantic Analysis & Symbol Table)
+└──────┬───────┘
+       │ Validated AST & Context
+       ▼
+┌──────────────┐
+│intermediate.c│  (Intermediate Code Generation)
+└──────┬───────┘
+       │ IR Quadruples
+       ▼
+┌──────────────┐
+│  executor.c  │  (Simulation Engine & Execution)
+└──────┬───────┘
+       │
+  ┌────┴────────────┐
+  ▼                 ▼
+Formatted Output   Structured JSON
+(--text mode)      (Full Phase Dump)
+```
 
-### 3. The Bridge (API)
-Since browsers cannot natively run C binaries easily (without WebAssembly), a lightweight Node.js/Python API server acts as the middleman.
-*   It receives the source code from the React frontend.
-*   It invokes the MedRoute C compiler binary as a child process.
-*   It captures the standard output, JSON logs, and errors, returning them to the frontend for visualization.
+---
 
-## Data Flow
-`User Input (React)` -> `API (Node.js)` -> `Compiler Binary (C)` -> `Tokens -> AST -> Symbol Table -> IR -> Execution Output` -> `API (Node.js)` -> `Visuals (React)`
+## Compiler Phases
+
+### 1. Lexical Analyzer (`lexer.l`, `tokens.h`)
+- Reads the character stream from the source `.med` file.
+- Uses regular expressions to match language keywords (`PATIENT`, `AMBULANCE`, `HOSPITAL`, `LOCATION`, `SEVERITY`, `DISTANCE`, `SPEED`, `DISPATCH`, `ROUTE`, `PRIORITY`, `STATUS`, `TRANSFER`, `REPORT`).
+- Recognizes entity identifiers (`P101`, `A12`, `H01`), integer literals, quoted string literals, and whitespace/comments.
+- Tracks line numbers (`yylineno`) for precise error reporting.
+- Maintains a token stream capable of serializing into JSON or feeding directly into the parser.
+
+### 2. Syntax Analyzer (`parser.y`)
+- Implements a context-free LALR(1) grammar using GNU Bison.
+- Defines grammar rules for declarations (patients, ambulances, hospitals), property assignments (locations, severity levels, distances, speeds), and action commands (`DISPATCH`, `ROUTE`, `TRANSFER`, `REPORT`).
+- Constructs a structured parse tree.
+- Incorporates error productions (`error` token) to report syntax errors cleanly and attempt synchronization recovery.
+
+### 3. Symbol Table & Semantic Analyzer (`symbol_table.c/h`, `semantic.c/h`)
+- **Symbol Table**: Dynamic data structures tracking registered entities:
+  - **Patients**: ID, Location, Severity (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), State (`UNASSIGNED`, `ASSIGNED`, `TRANSFERRED`), assigned Ambulance, destination Hospital.
+  - **Ambulances**: ID, State (`AVAILABLE`, `DISPATCHED`, `BUSY`), assigned Patient, target Hospital, Priority, Speed (km/h), Distance (km), ETA (min).
+  - **Hospitals**: ID, Name, Status (`ACTIVE`, `FULL`).
+- **Semantic Validation**:
+  - Entity existence verification (cannot dispatch or route an undeclared entity).
+  - Redefinition prevention (cannot declare the same patient or ambulance twice).
+  - State compatibility (cannot dispatch an ambulance that is already busy).
+  - Domain constraints (distance and speed must be strictly positive values).
+  - Automatic priority derivation based on patient severity (e.g. `CRITICAL` -> `HIGH` priority dispatch).
+
+### 4. Intermediate Code Generator (`intermediate.c/h`)
+- Translates validated AST nodes into a linear sequence of 3-address/quadruple IR instructions.
+- IR opcodes include:
+  - `REGISTER_PATIENT`, `SET_LOCATION`, `SET_SEVERITY`
+  - `REGISTER_AMBULANCE`, `REGISTER_HOSPITAL`
+  - `DISTANCE`, `SPEED`
+  - `DISPATCH`, `ASSIGN_ROUTE`, `TRANSFER`, `REPORT`
+- Decouples front-end language syntax from downstream execution logic.
+
+### 5. Execution Engine (`executor.c/h`)
+- Simulates the emergency response logistics sequentially based on the generated IR.
+- Calculates estimated time of arrival:
+  $$\text{ETA (minutes)} = \left(\frac{\text{Distance (km)}}{\text{Speed (km/h)}}\right) \times 60$$
+- Transitions ambulance and patient states in real time.
+- Emits detailed dispatch manifests, route notifications, and hospital handoff confirmations.
+
+### 6. Output Modes (`main.c`)
+- **Standard Mode (JSON)**: Serializes the entire compilation pipeline (tokens, parse tree, symbol table, IR quadruples, execution log) for machine readability and external integration.
+- **`--text` Mode**: Emits a human-readable, clean terminal log formatted with dispatch banners and system report summaries.
